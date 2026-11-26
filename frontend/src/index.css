@@ -159,7 +159,127 @@ h1 {
 }
 
 /* QUEM SOU EU */
+.sobre-apresentacao {
+    padding: 60px 10%;
+    background-color: var(--fundo);
+}
 
+.sobre-apresentacao h1 {
+    color: var(--titulo);
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 40px;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.perfil img {
+    width: 250px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.perfil-texto {
+    max-width: 600px;
+}
+
+.perfil-texto h2 {
+    color: var(--titulo);
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.perfil-texto h3 {
+    color: var(--verde-medio);
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.perfil-texto p {
+    color: var(--texto);
+    font-size: 18px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+/* MINHA TRAJETÓRIA ACADÊMICA */
+
+.trajetoria {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
+
+.trajetoria h2 {
+    color: var(--titulo);
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.cards-trajetoria {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card-trajetoria {
+    flex: 1;
+    min-width: 250px;
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-trajetoria h3 {
+    color: var(--titulo);
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.card-trajetoria h4 {
+    color: var(--verde-medio);
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.card-trajetoria p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.card-trajetoria .botao-home {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+.habilidades {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.habilidades h3 {
+    color: var(--titulo);
+    font-size: 26px;
+    margin-bottom: 15px;
+}
+
+.habilidades p {
+    font-size: 18px;
+    line-height: 1.8;
+    text-align: justify;
+}
 
 /* PÁGINA SESI */
 
