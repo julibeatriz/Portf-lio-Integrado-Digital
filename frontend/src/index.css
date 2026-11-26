@@ -52,3 +52,125 @@ h1 {
     color: var(--titulo);
     font-weight: bold;
 }
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--verde-escuro);
+    color: var(--branco);
+    padding: 20px 5%;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.menu a:hover {
+    color: var(--verde-suave);
+}
+
+.botao-login {
+    background-color: var(--verde-suave);
+    color: var(--titulo);
+    padding: 10px 25px;
+    border-radius: 30px;
+}
+
+.menu .botao-login:hover {
+    background-color: var(--verde-claro);
+    color: var(--titulo);
+}
+
+/* FOOTER */
+.footer {
+    background-color: var(--verde-escuro);
+    color: var(--branco);
+    text-align: center;
+    padding: 30px 5%;
+}
+
+.footer h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.footer p {
+    margin: 10px 0;
+}
+
+.footer hr {
+    border: none;
+    border-top: 1px solid var(--verde-medio);
+    margin: 20px 0;
+}
+
+/* PÁGINA INICIAL */
+
+.formacao {
+    background-color: var(--verde-claro);
+    padding: 60px 5%;
+    text-align: center;
+}
+
+.formacao h2 {
+    color: var(--titulo);
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+
+.cards-formacao {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 35px;
+}
+
+.card-formacao {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 35px;
+    width: 350px;
+    max-width: 100%;
+}
+
+.card-formacao h3 {
+    color: var(--titulo);
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+.card-formacao p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.card-formacao:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* QUEM SOU EU */
+
+
+/* PÁGINA SESI */
+
+
+/* PÁGINA SENAI */
+
+
+/* REGISTROS */
+
+
+/* LOGIN */
+
+
+/* PAINEL ADMINISTRATIVO */
