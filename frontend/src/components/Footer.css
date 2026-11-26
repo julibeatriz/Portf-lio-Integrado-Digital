@@ -1,0 +1,21 @@
+.footer {
+    background-color: var(--verde-escuro);
+    color: var(--branco);
+    text-align: center;
+    padding: 30px 5%;
+}
+
+.footer h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.footer p {
+    margin: 10px 0;
+}
+
+.footer hr {
+    border: none;
+    border-top: 1px solid var(--verde-medio);
+    margin: 20px 0;
+}
