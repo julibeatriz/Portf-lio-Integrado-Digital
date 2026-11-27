@@ -9,6 +9,7 @@ import Senai from './pages/Senai.jsx'
 import Area from './pages/area.jsx'
 import Secao from './pages/Secao.jsx'
 import Registro from './pages/Registro.jsx'
+import Login from './pages/Login.jsx'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/area/:id" element={<Area/>}/>
         <Route path="/area/:id/secao/:secao" element={<Secao/>}/>
         <Route path="/registro/:id" element={<Registro/>}/>
+        <Route path="/login" element={<Login/>}/>
       </Routes> 
     </main>  
     
