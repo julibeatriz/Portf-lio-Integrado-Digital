@@ -10,6 +10,8 @@ let id_registro
 let id_area_senai
 let id_registro_senai
 let id_registro_anual
+let id_registro_reflexao
+let id_registro_participacao
 
 beforeAll(async () => {
 
@@ -89,6 +91,7 @@ describe("POST /api/registros", () => {
         expect(response.status).toBe(201)
         expect(id_registro).toBeDefined()
         expect(response.body.bimestre).toBe("1º Bimestre")
+        expect(response.body.aprendizado).toBe("Aprendizado adquirido durante a atividade")
 
     })
 
@@ -242,7 +245,7 @@ describe("POST /api/registros", () => {
 
     })
 
-    test("Deve cadastrar registro anual do SESI sem bimestre", async () => {
+    test("Deve cadastrar registro anual do SESI sem título e sem bimestre", async () => {
 
         const response = await request(app)
             .post("/api/registros")
@@ -250,7 +253,6 @@ describe("POST /api/registros", () => {
             .send({
                 id_area: id_area,
                 secao: "Reflexão Crítica",
-                titulo: "Registro anual",
                 descricao: "Descrição do registro anual"
             })
 
@@ -258,6 +260,7 @@ describe("POST /api/registros", () => {
 
         expect(response.status).toBe(201)
         expect(id_registro_anual).toBeDefined()
+        expect(response.body.titulo).toBe("Reflexão Crítica")
         expect(response.body.bimestre).toBeNull()
 
     })
@@ -272,6 +275,8 @@ describe("POST /api/registros", () => {
             .field("bimestre", "1º Bimestre")
             .field("titulo", "Registro com evidência")
             .field("descricao", "Descrição da atividade")
+            .field("reflexao_pratica", "Aplicação dos conhecimentos estudados")
+            .field("autoavaliacao", "Participação nas atividades propostas")
             .attach("evidencia_visual", Buffer.from("Arquivo de teste"), "teste.pdf")
 
         if(response.body.id_registro){
@@ -431,6 +436,7 @@ describe("PUT /api/registros/:id", () => {
         expect(response.status).toBe(200)
         expect(response.body.titulo).toBe("Registro atualizado")
         expect(response.body.bimestre).toBe("2º Bimestre")
+        expect(response.body.aprendizado).toBe("Aprendizado atualizado durante os testes")
 
     })
 
@@ -451,7 +457,7 @@ describe("PUT /api/registros/:id", () => {
 
     })
 
-    test("Deve atualizar registro anual sem bimestre", async () => {
+    test("Deve atualizar registro anual sem título e sem bimestre", async () => {
 
         expect(id_registro_anual).toBeDefined()
 
@@ -461,16 +467,16 @@ describe("PUT /api/registros/:id", () => {
             .send({
                 id_area: id_area,
                 secao: "Conexões Interdisciplinares",
-                titulo: "Registro anual atualizado",
                 descricao: "Descrição atualizada"
             })
 
         expect(response.status).toBe(200)
+        expect(response.body.titulo).toBe("Conexões Interdisciplinares")
         expect(response.body.bimestre).toBeNull()
 
     })
 
-    test("Deve ignorar bimestre em seção anual", async () => {
+    test("Deve ignorar bimestre e título personalizado em seção anual", async () => {
 
         expect(id_registro_anual).toBeDefined()
 
@@ -486,6 +492,7 @@ describe("PUT /api/registros/:id", () => {
             })
 
         expect(response.status).toBe(200)
+        expect(response.body.titulo).toBe("Aprendizados da Escola para a Vida")
         expect(response.body.bimestre).toBeNull()
 
     })
@@ -595,12 +602,14 @@ describe("PATCH /api/registros/:id", () => {
             .set("Authorization", `Bearer ${token}`)
             .send({
                 secao: "Fundamentos Teóricos",
-                bimestre: "1º Bimestre"
+                bimestre: "1º Bimestre",
+                titulo: "Registro bimestral"
             })
 
         expect(response.status).toBe(200)
         expect(response.body.secao).toBe("Fundamentos Teóricos")
         expect(response.body.bimestre).toBe("1º Bimestre")
+        expect(response.body.titulo).toBe("Registro bimestral")
 
     })
 
@@ -617,6 +626,7 @@ describe("PATCH /api/registros/:id", () => {
 
         expect(response.status).toBe(200)
         expect(response.body.secao).toBe("Reflexão Crítica")
+        expect(response.body.titulo).toBe("Reflexão Crítica")
         expect(response.body.bimestre).toBeNull()
 
     })
@@ -630,6 +640,173 @@ describe("PATCH /api/registros/:id", () => {
 
         expect(response.status).toBe(400)
         expect(response.body.message).toBe("Esta seção não permite evidências")
+
+    })
+
+})
+
+describe("Campos específicos das seções", () => {
+
+    test("Deve cadastrar os campos da Reflexão Crítica", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Reflexão Crítica",
+                descricao: "Conhecimentos adquiridos durante o ano",
+                reflexao_pratica: "Aplicação dos conhecimentos no cotidiano",
+                melhorias_necessarias: "Melhorar a organização dos estudos"
+            })
+
+        id_registro_reflexao = response.body.id_registro
+
+        expect(response.status).toBe(201)
+        expect(id_registro_reflexao).toBeDefined()
+        expect(response.body.titulo).toBe("Reflexão Crítica")
+        expect(response.body.bimestre).toBeNull()
+        expect(response.body.reflexao_pratica).toBe("Aplicação dos conhecimentos no cotidiano")
+        expect(response.body.melhorias_necessarias).toBe("Melhorar a organização dos estudos")
+
+    })
+
+    test("Deve buscar os campos da Reflexão Crítica", async () => {
+
+        expect(id_registro_reflexao).toBeDefined()
+
+        const response = await request(app)
+            .get(`/api/registros/${id_registro_reflexao}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.descricao).toBe("Conhecimentos adquiridos durante o ano")
+        expect(response.body.reflexao_pratica).toBe("Aplicação dos conhecimentos no cotidiano")
+        expect(response.body.melhorias_necessarias).toBe("Melhorar a organização dos estudos")
+
+    })
+
+    test("Deve atualizar os campos da Reflexão Crítica", async () => {
+
+        expect(id_registro_reflexao).toBeDefined()
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro_reflexao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Reflexão Crítica",
+                descricao: "Aprendizado acadêmico atualizado",
+                reflexao_pratica: "Aplicação prática atualizada",
+                melhorias_necessarias: "Melhorias atualizadas"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.titulo).toBe("Reflexão Crítica")
+        expect(response.body.bimestre).toBeNull()
+        expect(response.body.descricao).toBe("Aprendizado acadêmico atualizado")
+        expect(response.body.reflexao_pratica).toBe("Aplicação prática atualizada")
+        expect(response.body.melhorias_necessarias).toBe("Melhorias atualizadas")
+
+    })
+
+    test("Deve cadastrar Participação em Sala de Aula com autoavaliação", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Participação em Sala de Aula",
+                bimestre: "1º Bimestre",
+                titulo: "Atividade em sala",
+                descricao: "Atividade realizada durante a aula",
+                reflexao_pratica: "Aplicação dos conceitos estudados",
+                autoavaliacao: "Participei das atividades propostas"
+            })
+
+        id_registro_participacao = response.body.id_registro
+
+        expect(response.status).toBe(201)
+        expect(id_registro_participacao).toBeDefined()
+        expect(response.body.titulo).toBe("Atividade em sala")
+        expect(response.body.bimestre).toBe("1º Bimestre")
+        expect(response.body.reflexao_pratica).toBe("Aplicação dos conceitos estudados")
+        expect(response.body.autoavaliacao).toBe("Participei das atividades propostas")
+
+    })
+
+    test("Deve atualizar parcialmente a autoavaliação", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_participacao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                autoavaliacao: "Autoavaliação atualizada"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.autoavaliacao).toBe("Autoavaliação atualizada")
+        expect(response.body.reflexao_pratica).toBe("Aplicação dos conceitos estudados")
+        expect(response.body.titulo).toBe("Atividade em sala")
+        expect(response.body.bimestre).toBe("1º Bimestre")
+
+    })
+
+    test("Deve cadastrar Conexões Interdisciplinares sem título", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Conexões Interdisciplinares",
+                descricao: "Relação entre matemática e programação"
+            })
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.titulo).toBe("Conexões Interdisciplinares")
+        expect(response.body.bimestre).toBeNull()
+        expect(response.body.descricao).toBe("Relação entre matemática e programação")
+
+    })
+
+    test("Deve cadastrar Aprendizados da Escola para a Vida sem título", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Aprendizados da Escola para a Vida",
+                descricao: "Importância dos conhecimentos para a vida em sociedade"
+            })
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.titulo).toBe("Aprendizados da Escola para a Vida")
+        expect(response.body.bimestre).toBeNull()
+        expect(response.body.descricao).toBe("Importância dos conhecimentos para a vida em sociedade")
 
     })
 
@@ -726,6 +903,26 @@ afterAll(async () => {
 
         const response = await request(app)
             .delete(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+
+        expect([200, 404]).toContain(response.status)
+
+    }
+
+    if(id_registro_reflexao && token){
+
+        const response = await request(app)
+            .delete(`/api/registros/${id_registro_reflexao}`)
+            .set("Authorization", `Bearer ${token}`)
+
+        expect([200, 404]).toContain(response.status)
+
+    }
+
+    if(id_registro_participacao && token){
+
+        const response = await request(app)
+            .delete(`/api/registros/${id_registro_participacao}`)
             .set("Authorization", `Bearer ${token}`)
 
         expect([200, 404]).toContain(response.status)

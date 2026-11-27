@@ -15,6 +15,13 @@ const secoesBimestrais = [
     "Projetos e Trabalhos Desenvolvidos"
 ]
 
+const secoesAnuais = [
+    "Quem Sou Eu",
+    "Reflexão Crítica",
+    "Conexões Interdisciplinares",
+    "Aprendizados da Escola para a Vida"
+]
+
 const secoesComEvidencias = [
     "Participação em Sala de Aula",
     "Projetos e Trabalhos Desenvolvidos"
@@ -36,11 +43,24 @@ export const cadastrarRegistro = async(request, response)=>{
     let salvou = false
 
     try {
-        const { id_area, secao, bimestre, titulo, descricao, aprendizado } = request.body
+        const {
+            id_area,
+            secao,
+            bimestre,
+            titulo,
+            descricao,
+            aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias
+        } = request.body
+
         const id_usuario = request.usuario.id_usuario
         const evidencia_visual = request.files?.map(file => file.filename) || []
 
-        if(typeof titulo !== "string" || !titulo.trim() || typeof descricao !== "string" || !descricao.trim() || !id_area || !secao){
+        const tituloFinal = secoesAnuais.includes(secao) ? secao : titulo
+
+        if(typeof tituloFinal !== "string" || !tituloFinal.trim() || typeof descricao !== "string" || !descricao.trim() || !id_area || !secao){
 
             await limparUpload(request)
 
@@ -76,9 +96,12 @@ export const cadastrarRegistro = async(request, response)=>{
             id_usuario,
             secao,
             bimestre: bimestreFinal,
-            titulo,
+            titulo: tituloFinal,
             descricao,
             aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias,
             evidencia_visual
         })
 
@@ -91,6 +114,10 @@ export const cadastrarRegistro = async(request, response)=>{
 
         if(!salvou){
             await limparUpload(request)
+        }
+
+        if(error.name === "SequelizeValidationError"){
+            return response.status(400).json({message: error.message})
         }
 
         response.status(500).json({
@@ -129,7 +156,17 @@ export const atualizarRegistro = async(request, response)=>{
 
         const registro = await registroModel.findByPk(id)
 
-        const { id_area, secao, bimestre, titulo, descricao, aprendizado } = request.body
+        const {
+            id_area,
+            secao,
+            bimestre,
+            titulo,
+            descricao,
+            aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias
+        } = request.body
 
         if(!registro){
             await limparUpload(request)
@@ -151,7 +188,9 @@ export const atualizarRegistro = async(request, response)=>{
             evidencia_visual = request.files.map(file => file.filename)
         }
 
-        if(typeof titulo !== "string" || !titulo.trim() || typeof descricao !== "string" || !descricao.trim() || !id_area || !secao){
+        const tituloFinal = secoesAnuais.includes(secao) ? secao : titulo
+
+        if(typeof tituloFinal !== "string" || !tituloFinal.trim() || typeof descricao !== "string" || !descricao.trim() || !id_area || !secao){
 
             await limparUpload(request)
 
@@ -186,9 +225,12 @@ export const atualizarRegistro = async(request, response)=>{
             id_area,
             secao,
             bimestre: area.instituicao === "Sesi" && secoesBimestrais.includes(secao) ? bimestre : null,
-            titulo,
+            titulo: tituloFinal,
             descricao,
             aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias,
             evidencia_visual
         })
 
@@ -205,6 +247,10 @@ export const atualizarRegistro = async(request, response)=>{
 
         if(!salvou){
             await limparUpload(request)
+        }
+
+        if(error.name === "SequelizeValidationError"){
+            return response.status(400).json({message: error.message})
         }
 
         response.status(500).json({message: "Erro ao editar registro"})
@@ -231,7 +277,17 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             return response.status(403).json({message: "Você não tem permissão para atualizar este registro"})
         }
 
-        const { id_area, secao, bimestre, titulo, descricao, aprendizado } = request.body
+        const {
+            id_area,
+            secao,
+            bimestre,
+            titulo,
+            descricao,
+            aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias
+        } = request.body
 
         const imagensAntigas = registro.evidencia_visual
 
@@ -241,12 +297,18 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             evidencia_visual = request.files.map(file => file.filename)
         }
 
-        if(titulo !== undefined){
-            if(typeof titulo !== "string" || !titulo.trim()){
-                await limparUpload(request)
+        const secaoFinal = secao !== undefined ? secao : registro.secao
 
-                return response.status(400).json({message: "Título inválido"})
-            }
+        let tituloFinal = titulo !== undefined ? titulo : registro.titulo
+
+        if(secoesAnuais.includes(secaoFinal)){
+            tituloFinal = secaoFinal
+        }
+
+        if(typeof tituloFinal !== "string" || !tituloFinal.trim()){
+            await limparUpload(request)
+
+            return response.status(400).json({message: "Título inválido"})
         }
 
         if(descricao !== undefined){
@@ -256,8 +318,6 @@ export const atualizarParteDoRegistro = async(request, response)=>{
                 return response.status(400).json({message: "Descrição inválida"})
             }
         }
-
-        const secaoFinal = secao !== undefined ? secao : registro.secao
 
         if(!secoesComEvidencias.includes(secaoFinal) && evidencia_visual?.length > 0){
             await limparUpload(request)
@@ -285,9 +345,12 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             id_area,
             secao,
             bimestre: area.instituicao === "Sesi" && secoesBimestrais.includes(secaoFinal) ? bimestreFinal : null,
-            titulo,
+            titulo: tituloFinal,
             descricao,
             aprendizado,
+            reflexao_pratica,
+            autoavaliacao,
+            melhorias_necessarias,
             evidencia_visual
         })
 

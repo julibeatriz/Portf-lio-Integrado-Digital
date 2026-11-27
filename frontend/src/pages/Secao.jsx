@@ -12,18 +12,25 @@ function Secao() {
     const [carregando, setCarregando] = useState(true)
     const [instituicao, setInstituicao] = useState("")
 
-    const secoesBimestrais = [
-        "Fundamentos Teóricos",
-        "Participação em Sala de Aula",
-        "Projetos e Trabalhos Desenvolvidos"
-    ]
-
     const bimestres = [
         "Todos",
         "1º Bimestre",
         "2º Bimestre",
         "3º Bimestre",
         "4º Bimestre"
+    ]
+
+    const secoesBimestrais = [
+        "Fundamentos Teóricos",
+        "Participação em Sala de Aula",
+        "Projetos e Trabalhos Desenvolvidos"
+    ]
+
+    const secoesAnuais = [
+        "Quem Sou Eu",
+        "Reflexão Crítica",
+        "Conexões Interdisciplinares",
+        "Aprendizados da Escola para a Vida"
     ]
 
     useEffect(() => {
@@ -74,9 +81,18 @@ function Secao() {
 
     }, [id, secao])
 
-    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+    const exigeBimestre =
+        instituicao === "Sesi" &&
+        secoesBimestrais.includes(secao)
 
-    const registrosFiltrados = registros.filter( registro => !exigeBimestre || bimestre === "Todos" || registro.bimestre === bimestre)
+    const secaoAnual = secoesAnuais.includes(secao)
+
+    const registrosFiltrados = registros.filter(
+        registro =>
+            !exigeBimestre ||
+            bimestre === "Todos" ||
+            registro.bimestre === bimestre
+    )
 
     return (
         <div className="secao">
@@ -126,7 +142,11 @@ function Secao() {
 
                 {carregando && <p>Carregando registros...</p>}
 
-                {!carregando && !erro && registrosFiltrados.length === 0 && (<p className="sem-registros"> Nenhum registro encontrado. </p>)}
+                {!carregando && !erro && registrosFiltrados.length === 0 && (
+                    <p className="sem-registros">
+                        Nenhum registro encontrado.
+                    </p>
+                )}
 
                 <div className="lista-registros">
 
@@ -136,9 +156,13 @@ function Secao() {
                             key={registro.id_registro}
                         >
 
-                           {exigeBimestre && registro.bimestre && ( <span>{registro.bimestre}</span>)}
+                            {exigeBimestre && registro.bimestre && (
+                                <span>{registro.bimestre}</span>
+                            )}
 
-                            <h3>{registro.titulo}</h3>
+                            {!secaoAnual && (
+                                <h3>{registro.titulo}</h3>
+                            )}
 
                             <p>{registro.descricao}</p>
 
@@ -160,4 +184,4 @@ function Secao() {
     )
 }
 
-export default Secao
+export default Secao;

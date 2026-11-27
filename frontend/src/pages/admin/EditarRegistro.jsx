@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link, useParams, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { API_URL } from "../../services/api.js"
 
 function EditarRegistro() {
@@ -7,12 +7,22 @@ function EditarRegistro() {
     const { id } = useParams()
     const navigate = useNavigate()
 
-    const [registro, setRegistro] = useState(null)
     const [areas, setAreas] = useState([])
-    const [mensagem, setMensagem] = useState("")
+    const [instituicao, setInstituicao] = useState("")
     const [idArea, setIdArea] = useState("")
-    const [bimestre, setBimestre] = useState("")
     const [secao, setSecao] = useState("")
+    const [bimestre, setBimestre] = useState("")
+    const [titulo, setTitulo] = useState("")
+    const [descricao, setDescricao] = useState("")
+    const [aprendizado, setAprendizado] = useState("")
+    const [reflexaoPratica, setReflexaoPratica] = useState("")
+    const [autoavaliacao, setAutoavaliacao] = useState("")
+    const [melhoriasNecessarias, setMelhoriasNecessarias] = useState("")
+    const [evidencias, setEvidencias] = useState([])
+    const [arquivos, setArquivos] = useState([])
+    const [mensagem, setMensagem] = useState("")
+    const [carregando, setCarregando] = useState(true)
+    const [registroEncontrado, setRegistroEncontrado] = useState(false)
 
     const secoes = [
         "Fundamentos Teóricos",
@@ -39,28 +49,45 @@ function EditarRegistro() {
     useEffect(() => {
 
         async function buscarDados() {
+
             try {
-                const respostaRegistro = await fetch(`${API_URL}/registros/${id}`)
 
-                const respostaAreas = await fetch(`${API_URL}/areas`)
+                const responseAreas = await fetch(`${API_URL}/areas`)
+                const responseRegistro = await fetch(`${API_URL}/registros/${id}`)
 
-                if (!respostaRegistro.ok || !respostaAreas.ok) {
-                    setMensagem("Erro ao buscar dados.")
+                if (!responseAreas.ok || !responseRegistro.ok) {
+                    setMensagem("Erro ao buscar registro.")
                     return
                 }
 
-                const dadosRegistro = await respostaRegistro.json()
-                const dadosAreas = await respostaAreas.json()
+                const dadosAreas = await responseAreas.json()
+                const registro = await responseRegistro.json()
 
-                setRegistro(dadosRegistro)
                 setAreas(dadosAreas)
-                setIdArea(String(dadosRegistro.id_area))
-                setBimestre(dadosRegistro.bimestre || "")
-                setSecao(dadosRegistro.secao)
+
+                const area = dadosAreas.find(
+                    item => String(item.id_area) === String(registro.id_area)
+                )
+
+                setInstituicao(area?.instituicao || "")
+                setIdArea(String(registro.id_area))
+                setSecao(registro.secao)
+                setBimestre(registro.bimestre || "")
+                setTitulo(registro.titulo || "")
+                setDescricao(registro.descricao || "")
+                setAprendizado(registro.aprendizado || "")
+                setReflexaoPratica(registro.reflexao_pratica || "")
+                setAutoavaliacao(registro.autoavaliacao || "")
+                setMelhoriasNecessarias(registro.melhorias_necessarias || "")
+                setEvidencias(registro.evidencia_visual || [])
+                setRegistroEncontrado(true)
 
             } catch (error) {
                 console.log(error)
                 setMensagem("Erro ao conectar com o servidor.")
+
+            } finally {
+                setCarregando(false)
             }
         }
 
@@ -68,47 +95,124 @@ function EditarRegistro() {
 
     }, [id])
 
-    const areaSelecionada = areas.find(
-        area => String(area.id_area) === idArea
+    const areasFiltradas = areas.filter(
+        area => area.instituicao === instituicao
     )
 
-    const instituicao = areaSelecionada?.instituicao
+    const exigeBimestre =
+        instituicao === "Sesi" &&
+        secoesBimestrais.includes(secao)
 
-    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+    const exigeTitulo = secoesBimestrais.includes(secao)
 
     const permiteEvidencias =
         secao === "Participação em Sala de Aula" ||
         secao === "Projetos e Trabalhos Desenvolvidos"
 
-    async function atualizar(event) {
+    const permiteReflexaoPratica =
+        secao === "Participação em Sala de Aula" ||
+        secao === "Reflexão Crítica"
+
+    let rotuloDescricao = "Descrição"
+    let placeholderDescricao = "Digite a descrição"
+
+    if (secao === "Fundamentos Teóricos") {
+        rotuloDescricao = "Resumo teórico"
+        placeholderDescricao = "Descreva as principais teorias, conceitos e metodologias estudadas"
+    }
+
+    if (secao === "Participação em Sala de Aula") {
+        rotuloDescricao = "Registro de atividades"
+        placeholderDescricao = "Descreva as atividades, discussões e temas abordados em sala de aula"
+    }
+
+    if (secao === "Projetos e Trabalhos Desenvolvidos") {
+        rotuloDescricao = "Descrição das atividades"
+        placeholderDescricao = "Descreva os projetos, trabalhos, pesquisas e atividades práticas desenvolvidas"
+    }
+
+    if (secao === "Reflexão Crítica") {
+        rotuloDescricao = "Aprendizado acadêmico"
+        placeholderDescricao = "Reflita sobre os principais conhecimentos adquiridos ao longo do ano"
+    }
+
+    if (secao === "Conexões Interdisciplinares") {
+        rotuloDescricao = "Relações interdisciplinares"
+        placeholderDescricao = "Descreva as relações entre os conhecimentos desta área e outras disciplinas"
+    }
+
+    if (secao === "Aprendizados da Escola para a Vida") {
+        rotuloDescricao = "Reflexão sobre experiências"
+        placeholderDescricao = "Reflita sobre como as experiências escolares contribuem para sua vida e para a sociedade"
+    }
+
+    async function editar(event) {
+
         event.preventDefault()
         setMensagem("")
 
-        const formData = new FormData(event.currentTarget)
         const token = sessionStorage.getItem("token")
 
-        if (!exigeBimestre) {
-            formData.delete("bimestre")
+        if (!permiteEvidencias && evidencias.length > 0) {
+            setMensagem("Não é possível alterar para uma seção que não permite evidências.")
+            return
         }
 
-        if (!formData.get("aprendizado").trim()) {
-            formData.delete("aprendizado")
+        if (arquivos.length > 10) {
+            setMensagem("Selecione no máximo 10 arquivos.")
+            return
         }
 
-        if (!permiteEvidencias) {
+        const formData = new FormData()
 
-            if (registro.evidencia_visual?.length) {
-                setMensagem("Não é possível alterar para uma seção que não permite evidências enquanto houver arquivos cadastrados.")
-                return
+        formData.append("id_area", idArea)
+        formData.append("secao", secao)
+        formData.append("descricao", descricao)
+
+        if (exigeTitulo) {
+            formData.append("titulo", titulo)
+        }
+
+        if (exigeBimestre) {
+            formData.append("bimestre", bimestre)
+        }
+
+        if (secao === "Fundamentos Teóricos" && aprendizado.trim()) {
+            formData.append("aprendizado", aprendizado)
+        }
+
+        if (permiteReflexaoPratica) {
+            formData.append("reflexao_pratica", reflexaoPratica)
+        }
+
+        if (secao === "Participação em Sala de Aula") {
+            formData.append("autoavaliacao", autoavaliacao)
+        }
+
+        if (secao === "Reflexão Crítica") {
+            formData.append("melhorias_necessarias", melhoriasNecessarias)
+        }
+
+        if (permiteEvidencias) {
+
+            for (const arquivo of arquivos) {
+
+                if (arquivo.size > 20 * 1024 * 1024) {
+                    setMensagem("Cada arquivo deve ter no máximo 20 MB.")
+                    return
+                }
+
+                formData.append("evidencia_visual", arquivo)
             }
-
-            formData.delete("evidencia_visual")
         }
 
         try {
+
             const response = await fetch(`${API_URL}/registros/${id}`, {
                 method: "PUT",
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 body: formData
             })
 
@@ -121,80 +225,122 @@ function EditarRegistro() {
             const dados = await response.json()
 
             if (!response.ok) {
-                setMensagem(dados.message || "Erro ao atualizar.")
+                setMensagem(dados.message || "Erro ao editar registro.")
                 return
             }
 
             navigate("/admin/registros")
 
         } catch (error) {
+            console.log(error)
             setMensagem("Erro ao conectar com o servidor.")
         }
     }
 
-    if (!registro) {
-        return <p>{mensagem || "Carregando registro..."}</p>
+    if (carregando) {
+        return <p>Carregando registro...</p>
+    }
+
+    if (!registroEncontrado) {
+        return (
+            <div className="cadastro-admin">
+                <p>{mensagem}</p>
+                <Link to="/admin/registros">Voltar aos registros</Link>
+            </div>
+        )
     }
 
     return (
+
         <div className="cadastro-admin">
 
             <section className="portfolio-apresentacao">
 
-                <Link to="/admin/registros" className="voltar">← Voltar ao gerenciamento </Link>
+                <Link to="/admin/registros" className="voltar">
+                    ← Voltar aos registros
+                </Link>
 
                 <h1>Editar registro</h1>
 
-                <p>Atualize as informações do seu registro.</p>
+                <p>Atualize as informações do seu portfólio.</p>
 
             </section>
 
-            <form
-                key={registro.id_registro}
-                className="form-admin"
-                onSubmit={atualizar}
-            >
+            <form className="form-admin" onSubmit={editar}>
+
+                <label htmlFor="instituicao">Instituição</label>
+
+                <select
+                    id="instituicao"
+                    value={instituicao}
+                    onChange={event => {
+                        setInstituicao(event.target.value)
+                        setIdArea("")
+                        setBimestre("")
+                    }}
+                    required
+                >
+                    <option value="">Selecione a instituição</option>
+                    <option value="Sesi">SESI</option>
+                    <option value="Senai">SENAI</option>
+                </select>
 
                 <label htmlFor="area">Área de conhecimento</label>
 
                 <select
                     id="area"
-                    name="id_area"
                     value={idArea}
-                    onChange={event => {
-                        setIdArea(event.target.value)
-
-                        const novaArea = areas.find(
-                            area => String(area.id_area) === event.target.value
-                        )
-
-                        if (novaArea?.instituicao === "Senai") {
-                            setBimestre("")
-                        }
-                    }}
+                    onChange={event => setIdArea(event.target.value)}
+                    disabled={!instituicao}
                     required
                 >
-                    {areas.map(area => (
-                        <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option>
+                    <option value="">Selecione a área</option>
+
+                    {areasFiltradas.map(area => (
+                        <option key={area.id_area} value={area.id_area}>
+                            {area.nome}
+                        </option>
                     ))}
+
                 </select>
 
                 <label htmlFor="secao">Seção</label>
 
                 <select
                     id="secao"
-                    name="secao"
                     value={secao}
                     onChange={event => {
-                        setSecao(event.target.value)
 
-                        if (!secoesBimestrais.includes(event.target.value)) {
+                        const novaSecao = event.target.value
+
+                        if (
+                            evidencias.length > 0 &&
+                            novaSecao !== "Participação em Sala de Aula" &&
+                            novaSecao !== "Projetos e Trabalhos Desenvolvidos"
+                        ) {
+                            setMensagem("Este registro possui evidências vinculadas.")
+                            return
+                        }
+
+                        setSecao(novaSecao)
+                        setArquivos([])
+                        setMensagem("")
+
+                        if (!secoesBimestrais.includes(novaSecao)) {
                             setBimestre("")
                         }
+
                     }}
                     required
                 >
-                    {secoes.map(item => ( <option key={item} value={item}> {item} </option> ))}
+                    <option value="">Selecione a seção</option>
+
+                    {secoes.map(item => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
+
                 </select>
 
                 {exigeBimestre && (
@@ -203,73 +349,144 @@ function EditarRegistro() {
 
                         <select
                             id="bimestre"
-                            name="bimestre"
                             value={bimestre}
                             onChange={event => setBimestre(event.target.value)}
                             required
                         >
                             <option value="">Selecione o bimestre</option>
 
-                            {bimestres.map(item => ( <option key={item} value={item}> {item}</option>))}
+                            {bimestres.map(item => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+
                         </select>
                     </>
                 )}
 
-                <label htmlFor="titulo">Título</label>
+                {exigeTitulo && (
+                    <>
+                        <label htmlFor="titulo">Título</label>
 
-                <input
-                    id="titulo"
-                    type="text"
-                    name="titulo"
-                    defaultValue={registro.titulo}
-                    minLength={3}
-                    maxLength={200}
-                    required
-                />
+                        <input
+                            id="titulo"
+                            type="text"
+                            placeholder="Digite o título"
+                            value={titulo}
+                            onChange={event => setTitulo(event.target.value)}
+                            minLength={3}
+                            maxLength={200}
+                            required
+                        />
+                    </>
+                )}
 
-                <label htmlFor="descricao">Descrição da atividade</label>
+                {secao && (
+                    <>
+                        <label htmlFor="descricao">{rotuloDescricao}</label>
 
-                <textarea
-                    id="descricao"
-                    name="descricao"
-                    defaultValue={registro.descricao}
-                    rows={5}
-                    minLength={5}
-                    maxLength={1000}
-                    required
-                />
+                        <textarea
+                            id="descricao"
+                            placeholder={placeholderDescricao}
+                            value={descricao}
+                            onChange={event => setDescricao(event.target.value)}
+                            rows={5}
+                            minLength={5}
+                            maxLength={1000}
+                            required
+                        />
+                    </>
+                )}
 
-                <label htmlFor="aprendizado">Aprendizado adquirido</label>
+                {secao === "Fundamentos Teóricos" && (
+                    <>
+                        <label htmlFor="aprendizado">Aprendizado adquirido</label>
 
-                <textarea
-                    id="aprendizado"
-                    name="aprendizado"
-                    defaultValue={registro.aprendizado || ""}
-                    rows={5}
-                    minLength={10}
-                    maxLength={1200}
-                />
+                        <textarea
+                            id="aprendizado"
+                            placeholder="Descreva os conhecimentos e habilidades adquiridos"
+                            value={aprendizado}
+                            onChange={event => setAprendizado(event.target.value)}
+                            rows={5}
+                            minLength={10}
+                            maxLength={1200}
+                        />
+                    </>
+                )}
+
+                {permiteReflexaoPratica && (
+                    <>
+                        <label htmlFor="reflexao_pratica">
+                            {secao === "Reflexão Crítica" ? "Aplicação prática" : "Reflexão prática"}
+                        </label>
+
+                        <textarea
+                            id="reflexao_pratica"
+                            placeholder="Descreva como os conhecimentos adquiridos podem ser aplicados na prática e no cotidiano"
+                            value={reflexaoPratica}
+                            onChange={event => setReflexaoPratica(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
+
+                {secao === "Participação em Sala de Aula" && (
+                    <>
+                        <label htmlFor="autoavaliacao">Autoavaliação</label>
+
+                        <textarea
+                            id="autoavaliacao"
+                            placeholder="Avalie sua participação, dedicação e envolvimento nas atividades"
+                            value={autoavaliacao}
+                            onChange={event => setAutoavaliacao(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
+
+                {secao === "Reflexão Crítica" && (
+                    <>
+                        <label htmlFor="melhorias_necessarias">Melhorias necessárias</label>
+
+                        <textarea
+                            id="melhorias_necessarias"
+                            placeholder="Identifique os desafios enfrentados e os aspectos que precisam ser melhorados"
+                            value={melhoriasNecessarias}
+                            onChange={event => setMelhoriasNecessarias(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
 
                 {permiteEvidencias && (
                     <>
-                        <label>Evidências atuais</label>
 
-                        <div className="arquivos-atuais">
+                        {evidencias.length > 0 && (
+                            <div>
 
-                            {(registro.evidencia_visual || []).map(arquivo => (
-                                <a
-                                    key={arquivo}
-                                    href={`http://localhost:3333/public/${encodeURIComponent(arquivo)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {arquivo}
-                                </a>
-                            ))}
+                                <label>Evidências atuais</label>
 
-                            {!registro.evidencia_visual?.length && ( <p>Nenhuma evidência cadastrada.</p> )}
+                                {evidencias.map(arquivo => (
+                                    <p key={arquivo}>
+                                        <a
+                                            href={`http://localhost:3333/public/${encodeURIComponent(arquivo)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {arquivo}
+                                        </a>
+                                    </p>
+                                ))}
 
-                        </div>
+                            </div>
+                        )}
 
                         <label htmlFor="evidencias">Novas evidências</label>
 
@@ -277,16 +494,27 @@ function EditarRegistro() {
                             key={secao}
                             id="evidencias"
                             type="file"
-                            name="evidencia_visual"
-                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
                             multiple
+                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
+                            onChange={event => setArquivos(Array.from(event.target.files))}
                         />
 
-                        <p className="aviso-arquivos"> Os novos arquivos substituirão as evidências atuais. Deixe vazio para manter os arquivos existentes. </p>
+                        <p className="aviso-arquivos">
+                            Máximo de 10 arquivos de até 20 MB cada.
+                        </p>
+
+                        <p className="aviso-arquivos">
+                            Selecione novos arquivos somente se desejar substituir as evidências atuais.
+                        </p>
+
                     </>
                 )}
 
-                {mensagem && (<p className="mensagem-admin" role="status">{mensagem}</p>)}
+                {mensagem && (
+                    <p className="mensagem-admin" role="status">
+                        {mensagem}
+                    </p>
+                )}
 
                 <button type="submit">Salvar alterações</button>
 

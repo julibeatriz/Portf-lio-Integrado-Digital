@@ -42,9 +42,48 @@ function Registro() {
         return <p>Carregando registro...</p>
     }
 
+    const secoesAnuais = [
+        "Quem Sou Eu",
+        "Reflexão Crítica",
+        "Conexões Interdisciplinares",
+        "Aprendizados da Escola para a Vida"
+    ]
+
+    const secaoAnual = secoesAnuais.includes(registro.secao)
+
     const permiteEvidencias =
         registro.secao === "Participação em Sala de Aula" ||
         registro.secao === "Projetos e Trabalhos Desenvolvidos"
+
+    const permiteReflexaoPratica =
+        registro.secao === "Participação em Sala de Aula" ||
+        registro.secao === "Reflexão Crítica"
+
+    let rotuloDescricao = "Descrição"
+
+    if (registro.secao === "Fundamentos Teóricos") {
+        rotuloDescricao = "Resumo teórico"
+    }
+
+    if (registro.secao === "Participação em Sala de Aula") {
+        rotuloDescricao = "Registro de atividades"
+    }
+
+    if (registro.secao === "Projetos e Trabalhos Desenvolvidos") {
+        rotuloDescricao = "Descrição das atividades"
+    }
+
+    if (registro.secao === "Reflexão Crítica") {
+        rotuloDescricao = "Aprendizado acadêmico"
+    }
+
+    if (registro.secao === "Conexões Interdisciplinares") {
+        rotuloDescricao = "Relações interdisciplinares"
+    }
+
+    if (registro.secao === "Aprendizados da Escola para a Vida") {
+        rotuloDescricao = "Reflexão sobre experiências"
+    }
 
     return (
         <div className="registro">
@@ -53,12 +92,14 @@ function Registro() {
 
                 <Link to={`/area/${registro.id_area}/secao/${encodeURIComponent(registro.secao)}`} className="voltar">  ← Voltar aos registros</Link>
 
-                <span>
-                    {registro.secao}
-                    {registro.bimestre && ` | ${registro.bimestre}`}
-                </span>
+                {!secaoAnual && (
+                    <span>
+                        {registro.secao}
+                        {registro.bimestre && ` | ${registro.bimestre}`}
+                    </span>
+                )}
 
-                <h1>{registro.titulo}</h1>
+                <h1>{secaoAnual ? registro.secao : registro.titulo}</h1>
 
             </section>
 
@@ -66,13 +107,47 @@ function Registro() {
 
                 <div className="registro-detalhes">
 
-                    <h2>Descrição da atividade</h2>
+                    <h2>{rotuloDescricao}</h2>
                     <p>{registro.descricao}</p>
 
-                    <hr />
+                    {registro.secao === "Fundamentos Teóricos" && registro.aprendizado && (
+                        <>
+                            <hr />
 
-                    <h2>Aprendizado adquirido</h2>
-                    <p> {registro.aprendizado || "Nenhum aprendizado registrado."} </p>
+                            <h2>Aprendizado adquirido</h2>
+                            <p>{registro.aprendizado}</p>
+                        </>
+                    )}
+
+                    {permiteReflexaoPratica && registro.reflexao_pratica && (
+                        <>
+                            <hr />
+
+                            <h2>
+                                {registro.secao === "Reflexão Crítica" ? "Aplicação prática" : "Reflexão prática"}
+                            </h2>
+
+                            <p>{registro.reflexao_pratica}</p>
+                        </>
+                    )}
+
+                    {registro.secao === "Participação em Sala de Aula" && registro.autoavaliacao && (
+                        <>
+                            <hr />
+
+                            <h2>Autoavaliação</h2>
+                            <p>{registro.autoavaliacao}</p>
+                        </>
+                    )}
+
+                    {registro.secao === "Reflexão Crítica" && registro.melhorias_necessarias && (
+                        <>
+                            <hr />
+
+                            <h2>Melhorias necessárias</h2>
+                            <p>{registro.melhorias_necessarias}</p>
+                        </>
+                    )}
 
                     {permiteEvidencias && (
                         <>
@@ -123,4 +198,4 @@ function Registro() {
     )
 }
 
-export default Registro
+export default Registro;

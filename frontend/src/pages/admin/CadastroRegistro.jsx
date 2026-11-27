@@ -12,6 +12,9 @@ function CadastroRegistro() {
     const [titulo, setTitulo] = useState("")
     const [descricao, setDescricao] = useState("")
     const [aprendizado, setAprendizado] = useState("")
+    const [reflexaoPratica, setReflexaoPratica] = useState("")
+    const [autoavaliacao, setAutoavaliacao] = useState("")
+    const [melhoriasNecessarias, setMelhoriasNecessarias] = useState("")
     const [arquivos, setArquivos] = useState([])
     const [mensagem, setMensagem] = useState("")
 
@@ -65,11 +68,52 @@ function CadastroRegistro() {
 
     const areasFiltradas = areas.filter(area => area.instituicao === instituicao)
 
+    const exigeBimestre =
+        instituicao === "Sesi" &&
+        secoesBimestrais.includes(secao)
+
+    const exigeTitulo = secoesBimestrais.includes(secao)
+
     const permiteEvidencias =
         secao === "Participação em Sala de Aula" ||
         secao === "Projetos e Trabalhos Desenvolvidos"
 
-    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+    const permiteReflexaoPratica =
+        secao === "Participação em Sala de Aula" ||
+        secao === "Reflexão Crítica"
+
+    let rotuloDescricao = "Descrição"
+    let placeholderDescricao = "Digite a descrição"
+
+    if (secao === "Fundamentos Teóricos") {
+        rotuloDescricao = "Resumo teórico"
+        placeholderDescricao = "Descreva as principais teorias, conceitos e metodologias estudadas"
+    }
+
+    if (secao === "Participação em Sala de Aula") {
+        rotuloDescricao = "Registro de atividades"
+        placeholderDescricao = "Descreva as atividades, discussões e temas abordados em sala de aula"
+    }
+
+    if (secao === "Projetos e Trabalhos Desenvolvidos") {
+        rotuloDescricao = "Descrição das atividades"
+        placeholderDescricao = "Descreva os projetos, trabalhos, pesquisas e atividades práticas desenvolvidas"
+    }
+
+    if (secao === "Reflexão Crítica") {
+        rotuloDescricao = "Aprendizado acadêmico"
+        placeholderDescricao = "Reflita sobre os principais conhecimentos adquiridos ao longo do ano"
+    }
+
+    if (secao === "Conexões Interdisciplinares") {
+        rotuloDescricao = "Relações interdisciplinares"
+        placeholderDescricao = "Descreva as relações entre os conhecimentos desta área e outras disciplinas"
+    }
+
+    if (secao === "Aprendizados da Escola para a Vida") {
+        rotuloDescricao = "Reflexão sobre experiências"
+        placeholderDescricao = "Reflita sobre como as experiências escolares contribuem para sua vida e para a sociedade"
+    }
 
     async function cadastrar(event) {
         event.preventDefault()
@@ -87,15 +131,30 @@ function CadastroRegistro() {
 
         formData.append("id_area", idArea)
         formData.append("secao", secao)
-        formData.append("titulo", titulo)
         formData.append("descricao", descricao)
+
+        if (exigeTitulo) {
+            formData.append("titulo", titulo)
+        }
 
         if (exigeBimestre) {
             formData.append("bimestre", bimestre)
         }
 
-        if (aprendizado.trim()) {
+        if (secao === "Fundamentos Teóricos" && aprendizado.trim()) {
             formData.append("aprendizado", aprendizado)
+        }
+
+        if (permiteReflexaoPratica && reflexaoPratica.trim()) {
+            formData.append("reflexao_pratica", reflexaoPratica)
+        }
+
+        if (secao === "Participação em Sala de Aula" && autoavaliacao.trim()) {
+            formData.append("autoavaliacao", autoavaliacao)
+        }
+
+        if (secao === "Reflexão Crítica" && melhoriasNecessarias.trim()) {
+            formData.append("melhorias_necessarias", melhoriasNecessarias)
         }
 
         if (permiteEvidencias) {
@@ -140,6 +199,9 @@ function CadastroRegistro() {
             setTitulo("")
             setDescricao("")
             setAprendizado("")
+            setReflexaoPratica("")
+            setAutoavaliacao("")
+            setMelhoriasNecessarias("")
             setArquivos([])
 
             formulario.reset()
@@ -193,7 +255,11 @@ function CadastroRegistro() {
                 >
                     <option value="">Selecione a área</option>
 
-                    {areasFiltradas.map(area => ( <option key={area.id_area} value={area.id_area}>{area.nome}</option> ))}
+                    {areasFiltradas.map(area => (
+                        <option key={area.id_area} value={area.id_area}>
+                            {area.nome}
+                        </option>
+                    ))}
                 </select>
 
                 <label htmlFor="secao">Seção</label>
@@ -210,7 +276,11 @@ function CadastroRegistro() {
                 >
                     <option value="">Selecione a seção</option>
 
-                    {secoes.map(item => ( <option key={item} value={item}>{item}</option>))}
+                    {secoes.map(item => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
                 </select>
 
                 {exigeBimestre && (
@@ -225,48 +295,114 @@ function CadastroRegistro() {
                         >
                             <option value="">Selecione o bimestre</option>
 
-                            {bimestres.map(item => ( <option key={item} value={item}> {item}</option>))}
+                            {bimestres.map(item => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
                         </select>
                     </>
                 )}
 
-                <label htmlFor="titulo">Título</label>
+                {exigeTitulo && (
+                    <>
+                        <label htmlFor="titulo">Título</label>
 
-                <input
-                    id="titulo"
-                    type="text"
-                    placeholder="Digite o título da atividade"
-                    value={titulo}
-                    onChange={event => setTitulo(event.target.value)}
-                    minLength={3}
-                    maxLength={200}
-                    required
-                />
+                        <input
+                            id="titulo"
+                            type="text"
+                            placeholder="Digite o título"
+                            value={titulo}
+                            onChange={event => setTitulo(event.target.value)}
+                            minLength={3}
+                            maxLength={200}
+                            required
+                        />
+                    </>
+                )}
 
-                <label htmlFor="descricao">Descrição da atividade</label>
+                {secao && (
+                    <>
+                        <label htmlFor="descricao">{rotuloDescricao}</label>
 
-                <textarea
-                    id="descricao"
-                    placeholder="Descreva a atividade realizada"
-                    value={descricao}
-                    onChange={event => setDescricao(event.target.value)}
-                    rows={5}
-                    minLength={5}
-                    maxLength={1000}
-                    required
-                />
+                        <textarea
+                            id="descricao"
+                            placeholder={placeholderDescricao}
+                            value={descricao}
+                            onChange={event => setDescricao(event.target.value)}
+                            rows={5}
+                            minLength={5}
+                            maxLength={1000}
+                            required
+                        />
+                    </>
+                )}
 
-                <label htmlFor="aprendizado">Aprendizado adquirido</label>
+                {secao === "Fundamentos Teóricos" && (
+                    <>
+                        <label htmlFor="aprendizado">Aprendizado adquirido</label>
 
-                <textarea
-                    id="aprendizado"
-                    placeholder="Descreva o aprendizado adquirido"
-                    value={aprendizado}
-                    onChange={event => setAprendizado(event.target.value)}
-                    rows={5}
-                    minLength={10}
-                    maxLength={1200}
-                />
+                        <textarea
+                            id="aprendizado"
+                            placeholder="Descreva os conhecimentos e habilidades adquiridos"
+                            value={aprendizado}
+                            onChange={event => setAprendizado(event.target.value)}
+                            rows={5}
+                            minLength={10}
+                            maxLength={1200}
+                        />
+                    </>
+                )}
+
+                {permiteReflexaoPratica && (
+                    <>
+                        <label htmlFor="reflexao_pratica">
+                            {secao === "Reflexão Crítica" ? "Aplicação prática" : "Reflexão prática"}
+                        </label>
+
+                        <textarea
+                            id="reflexao_pratica"
+                            placeholder="Descreva como os conhecimentos adquiridos podem ser aplicados na prática e no cotidiano"
+                            value={reflexaoPratica}
+                            onChange={event => setReflexaoPratica(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
+
+                {secao === "Participação em Sala de Aula" && (
+                    <>
+                        <label htmlFor="autoavaliacao">Autoavaliação</label>
+
+                        <textarea
+                            id="autoavaliacao"
+                            placeholder="Avalie sua participação, dedicação e envolvimento nas atividades"
+                            value={autoavaliacao}
+                            onChange={event => setAutoavaliacao(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
+
+                {secao === "Reflexão Crítica" && (
+                    <>
+                        <label htmlFor="melhorias_necessarias">Melhorias necessárias</label>
+
+                        <textarea
+                            id="melhorias_necessarias"
+                            placeholder="Identifique os desafios enfrentados e os aspectos que precisam ser melhorados"
+                            value={melhoriasNecessarias}
+                            onChange={event => setMelhoriasNecessarias(event.target.value)}
+                            rows={5}
+                            maxLength={1200}
+                            required
+                        />
+                    </>
+                )}
 
                 {permiteEvidencias && (
                     <>
@@ -278,10 +414,12 @@ function CadastroRegistro() {
                             type="file"
                             multiple
                             accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
-                            onChange={event => setArquivos( Array.from(event.target.files))}
+                            onChange={event => setArquivos(Array.from(event.target.files))}
                         />
 
-                        <p className="aviso-arquivos">Máximo de 10 arquivos de até 20 MB cada.</p>
+                        <p className="aviso-arquivos">
+                            Máximo de 10 arquivos de até 20 MB cada.
+                        </p>
                     </>
                 )}
 
