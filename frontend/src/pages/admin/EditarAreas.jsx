@@ -139,4 +139,4 @@ function EditarArea() {
     )
 }
 
-export default EditarArea
+export default EditarArea;

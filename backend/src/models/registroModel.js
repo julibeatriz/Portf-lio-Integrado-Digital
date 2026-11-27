@@ -101,6 +101,11 @@ export const registroModel = conn.define(
         evidencia_visual:{
             type: DataTypes.JSON,
             allowNull: true
+        },
+
+        links_evidencias:{
+            type: DataTypes.JSON,
+            allowNull: true
         }
     }
 )

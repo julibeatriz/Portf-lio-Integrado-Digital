@@ -524,4 +524,4 @@ function EditarRegistro() {
     )
 }
 
-export default EditarRegistro
+export default EditarRegistro;

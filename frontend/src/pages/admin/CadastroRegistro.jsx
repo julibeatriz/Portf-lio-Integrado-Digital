@@ -16,6 +16,7 @@ function CadastroRegistro() {
     const [autoavaliacao, setAutoavaliacao] = useState("")
     const [melhoriasNecessarias, setMelhoriasNecessarias] = useState("")
     const [arquivos, setArquivos] = useState([])
+    const [links, setLinks] = useState([""])
     const [mensagem, setMensagem] = useState("")
 
     const navigate = useNavigate()
@@ -97,7 +98,7 @@ function CadastroRegistro() {
 
     if (secao === "Projetos e Trabalhos Desenvolvidos") {
         rotuloDescricao = "Descrição das atividades"
-        placeholderDescricao = "Descreva os projetos, trabalhos, pesquisas e atividades práticas desenvolvidas"
+        placeholderDescricao = "Descreva os projetos, trabalhos, pesquisas e atividades práticas desenvolvidos"
     }
 
     if (secao === "Reflexão Crítica") {
@@ -113,6 +114,35 @@ function CadastroRegistro() {
     if (secao === "Aprendizados da Escola para a Vida") {
         rotuloDescricao = "Reflexão sobre experiências"
         placeholderDescricao = "Reflita sobre como as experiências escolares contribuem para sua vida e para a sociedade"
+    }
+
+    function adicionarLink() {
+
+        if (links.length >= 10) {
+            setMensagem("Adicione no máximo 10 links.")
+            return
+        }
+
+        setLinks([...links, ""])
+
+    }
+
+    function alterarLink(indice, valor) {
+
+        const novosLinks = [...links]
+
+        novosLinks[indice] = valor
+
+        setLinks(novosLinks)
+
+    }
+
+    function removerLink(indice) {
+
+        const novosLinks = links.filter((link, i) => i !== indice)
+
+        setLinks(novosLinks.length > 0 ? novosLinks : [""])
+
     }
 
     async function cadastrar(event) {
@@ -161,13 +191,68 @@ function CadastroRegistro() {
 
             for (const arquivo of arquivos) {
 
-                if (arquivo.size > 20 * 1024 * 1024) {
-                    setMensagem("Cada arquivo deve ter no máximo 20 MB.")
+                const video =
+                    arquivo.type === "video/mp4" ||
+                    arquivo.type === "video/webm"
+
+                const limite = video
+                    ? 100 * 1024 * 1024
+                    : 20 * 1024 * 1024
+
+                if (arquivo.size > limite) {
+
+                    setMensagem(
+                        video
+                            ? "Cada vídeo deve ter no máximo 100 MB."
+                            : "Cada imagem ou documento deve ter no máximo 20 MB."
+                    )
+
                     return
                 }
 
                 formData.append("evidencia_visual", arquivo)
             }
+
+            const linksPreenchidos = links
+                .map(link => link.trim())
+                .filter(link => link !== "")
+
+            if (linksPreenchidos.length > 10) {
+                setMensagem("Adicione no máximo 10 links.")
+                return
+            }
+
+            for (const link of linksPreenchidos) {
+
+                try {
+
+                    const url = new URL(link)
+
+                    if (
+                        (url.protocol !== "http:" &&
+                        url.protocol !== "https:") ||
+                        url.username ||
+                        url.password ||
+                        link.length > 2048
+                    ) {
+                        setMensagem("Informe links válidos com HTTP ou HTTPS.")
+                        return
+                    }
+
+                } catch (error) {
+
+                    setMensagem("Informe links válidos com HTTP ou HTTPS.")
+                    return
+
+                }
+
+            }
+
+            formData.append(
+                "links_evidencias",
+                JSON.stringify(linksPreenchidos)
+            )
+
         }
 
         try {
@@ -203,6 +288,7 @@ function CadastroRegistro() {
             setAutoavaliacao("")
             setMelhoriasNecessarias("")
             setArquivos([])
+            setLinks([""])
 
             formulario.reset()
 
@@ -271,6 +357,7 @@ function CadastroRegistro() {
                         setSecao(event.target.value)
                         setBimestre("")
                         setArquivos([])
+                        setLinks([""])
                     }}
                     required
                 >
@@ -413,13 +500,59 @@ function CadastroRegistro() {
                             id="evidencias"
                             type="file"
                             multiple
-                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
+                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx,.mp4,.webm"
                             onChange={event => setArquivos(Array.from(event.target.files))}
                         />
 
                         <p className="aviso-arquivos">
-                            Máximo de 10 arquivos de até 20 MB cada.
+                            Máximo de 10 arquivos. Imagens e documentos de até 20 MB e vídeos de até 100 MB.
                         </p>
+
+                        <label htmlFor="link-0">Links</label>
+
+                        <div className="links-evidencias">
+
+                            {links.map((link, indice) => (
+
+                                <div className="campo-link" key={indice}>
+
+                                    <input
+                                        id={`link-${indice}`}
+                                        type="url"
+                                        aria-label={`Link ${indice + 1}`}
+                                        placeholder="https://..."
+                                        value={link}
+                                        maxLength={2048}
+                                        onChange={event => alterarLink(indice, event.target.value)}
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="remover-link"
+                                        onClick={() => removerLink(indice)}
+                                    >
+                                        Remover
+                                    </button>
+
+                                </div>
+
+                            ))}
+
+                            <button
+                                type="button"
+                                className="adicionar-link"
+                                onClick={adicionarLink}
+                                disabled={links.length >= 10}
+                            >
+                                + Adicionar outro link
+                            </button>
+
+                        </div>
+
+                        <p className="aviso-arquivos">
+                            Adicione até 10 links de vídeos, projetos, documentos ou outros conteúdos.
+                        </p>
+
                     </>
                 )}
 
@@ -435,4 +568,4 @@ function CadastroRegistro() {
     )
 }
 
-export default CadastroRegistro
+export default CadastroRegistro;

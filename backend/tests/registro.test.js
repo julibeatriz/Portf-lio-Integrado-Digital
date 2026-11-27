@@ -877,6 +877,397 @@ describe("DELETE /api/registros/:id", () => {
 
 })
 
+describe("Vídeos e links das evidências", () => {
+
+    test("Deve cadastrar registro com vídeo MP4", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com vídeo MP4")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .attach("evidencia_visual", Buffer.from("Vídeo de teste"), "teste.mp4")
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.evidencia_visual).toHaveLength(1)
+        expect(response.body.evidencia_visual[0]).toMatch(/\.mp4$/)
+
+    })
+
+    test("Deve cadastrar registro com vídeo WebM", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com vídeo WebM")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .attach("evidencia_visual", Buffer.from("Vídeo de teste"), "teste.webm")
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.evidencia_visual).toHaveLength(1)
+        expect(response.body.evidencia_visual[0]).toMatch(/\.webm$/)
+
+    })
+
+    test("Deve cadastrar registro somente com links", async () => {
+
+        const links = [
+            "https://github.com/",
+            "https://www.youtube.com/"
+        ]
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com links")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .field("links_evidencias", JSON.stringify(links))
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.links_evidencias).toEqual(links)
+        expect(response.body.evidencia_visual || []).toHaveLength(0)
+
+    })
+
+    test("Deve cadastrar arquivos e links no mesmo registro", async () => {
+
+        const links = ["https://github.com/"]
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com evidências")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .field("links_evidencias", JSON.stringify(links))
+            .attach("evidencia_visual", Buffer.from("Imagem de teste"), "teste.png")
+            .attach("evidencia_visual", Buffer.from("Documento de teste"), "teste.pdf")
+            .attach("evidencia_visual", Buffer.from("Vídeo de teste"), "teste.mp4")
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.evidencia_visual).toHaveLength(3)
+        expect(response.body.links_evidencias).toEqual(links)
+
+    })
+
+    test("Deve retornar erro ao cadastrar link inválido", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Projetos e Trabalhos Desenvolvidos",
+                bimestre: "1º Bimestre",
+                titulo: "Projeto com link inválido",
+                descricao: "Descrição do projeto desenvolvido",
+                links_evidencias: ["link-invalido"]
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao cadastrar link com protocolo não permitido", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Projetos e Trabalhos Desenvolvidos",
+                bimestre: "1º Bimestre",
+                titulo: "Projeto com link inválido",
+                descricao: "Descrição do projeto desenvolvido",
+                links_evidencias: ["ftp://example.com/"]
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao cadastrar mais de 10 links", async () => {
+
+        const links = Array.from(
+            { length: 11 },
+            (_, indice) => `https://example.com/${indice}`
+        )
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Projetos e Trabalhos Desenvolvidos",
+                bimestre: "1º Bimestre",
+                titulo: "Projeto com muitos links",
+                descricao: "Descrição do projeto desenvolvido",
+                links_evidencias: links
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao cadastrar links em seção não permitida", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Fundamentos Teóricos",
+                bimestre: "1º Bimestre",
+                titulo: "Registro de teste",
+                descricao: "Descrição da atividade",
+                links_evidencias: ["https://github.com/"]
+            })
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe("Esta seção não permite evidências")
+
+    })
+
+    test("Deve atualizar os links de um registro", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const links = [
+            "https://github.com/",
+            "https://www.youtube.com/"
+        ]
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro_participacao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Participação em Sala de Aula",
+                bimestre: "1º Bimestre",
+                titulo: "Atividade em sala",
+                descricao: "Atividade realizada durante a aula",
+                reflexao_pratica: "Aplicação dos conceitos estudados",
+                autoavaliacao: "Participação nas atividades propostas",
+                links_evidencias: links
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.links_evidencias).toEqual(links)
+
+    })
+
+    test("Deve buscar os links cadastrados no registro", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const response = await request(app)
+            .get(`/api/registros/${id_registro_participacao}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.links_evidencias).toEqual([
+            "https://github.com/",
+            "https://www.youtube.com/"
+        ])
+
+    })
+
+    test("Deve preservar os links durante atualização parcial", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_participacao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                titulo: "Atividade atualizada"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.titulo).toBe("Atividade atualizada")
+        expect(response.body.links_evidencias).toEqual([
+            "https://github.com/",
+            "https://www.youtube.com/"
+        ])
+
+    })
+
+    test("Deve atualizar parcialmente os links", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_participacao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                links_evidencias: ["https://www.figma.com/"]
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.links_evidencias).toEqual([
+            "https://www.figma.com/"
+        ])
+
+    })
+
+    test("Deve remover todos os links de um registro", async () => {
+
+        expect(id_registro_participacao).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_participacao}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                links_evidencias: []
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.links_evidencias).toHaveLength(0)
+
+    })
+
+    test("Deve retornar erro ao enviar imagem acima de 20 MB", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com imagem")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .attach(
+                "evidencia_visual",
+                Buffer.alloc(21 * 1024 * 1024),
+                "teste.png"
+            )
+
+        expect(response.status).toBe(400)
+
+    }, 30000)
+
+    test("Deve retornar erro ao enviar documento acima de 20 MB", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com documento")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .attach(
+                "evidencia_visual",
+                Buffer.alloc(21 * 1024 * 1024),
+                "teste.pdf"
+            )
+
+        expect(response.status).toBe(400)
+
+    }, 30000)
+
+    test("Deve retornar erro ao enviar vídeo acima de 100 MB", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com vídeo")
+            .field("descricao", "Descrição do projeto desenvolvido")
+            .attach(
+                "evidencia_visual",
+                Buffer.alloc(101 * 1024 * 1024),
+                "teste.mp4"
+            )
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe(
+            "Cada arquivo deve ter no máximo 100 MB"
+        )
+
+    }, 30000)
+
+    test("Deve retornar erro ao enviar mais de 10 arquivos", async () => {
+
+        const requisicao = request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Projetos e Trabalhos Desenvolvidos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Projeto com muitos arquivos")
+            .field("descricao", "Descrição do projeto desenvolvido")
+
+        for(let i = 0; i < 11; i++){
+
+            requisicao.attach(
+                "evidencia_visual",
+                Buffer.from("Arquivo de teste"),
+                `teste-${i}.pdf`
+            )
+
+        }
+
+        const response = await requisicao
+
+        expect(response.status).toBe(400)
+
+    })
+
+})
+
 afterAll(async () => {
 
     if(id_registro && token){

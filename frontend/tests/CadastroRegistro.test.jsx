@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, cleanup } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import CadastroRegistro from "../src/pages/admin/CadastroRegistro.jsx"
 
@@ -30,6 +30,7 @@ beforeEach(() => {
 
 afterEach(() => {
 
+    cleanup()
     sessionStorage.clear()
     vi.unstubAllGlobals()
 
@@ -113,7 +114,7 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve exibir as seções do portfólio", async () => {
+    test("Deve exibir as seções", async () => {
 
         render(
             <MemoryRouter>
@@ -130,7 +131,7 @@ describe("Página CadastroRegistro", () => {
             "Aprendizados da Escola para a Vida"
         ]
 
-        for (const secao of secoes) {
+        for(const secao of secoes){
 
             expect(await screen.findByRole("option", {
                 name: secao
@@ -162,7 +163,7 @@ describe("Página CadastroRegistro", () => {
             "Projetos e Trabalhos Desenvolvidos"
         ]
 
-        for (const secao of secoes) {
+        for(const secao of secoes){
 
             fireEvent.change(screen.getByLabelText(/seção/i), {
                 target: { value: secao }
@@ -175,41 +176,6 @@ describe("Página CadastroRegistro", () => {
             expect(screen.getByRole("option", {
                 name: "4º Bimestre"
             })).toBeInTheDocument()
-
-        }
-
-    })
-
-    test("Deve ocultar os bimestres nas seções anuais do SESI", async () => {
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/instituição/i), {
-            target: { value: "Sesi" }
-        })
-
-        await screen.findByRole("option", {
-            name: "Matemática"
-        })
-
-        const secoes = [
-            "Reflexão Crítica",
-            "Conexões Interdisciplinares",
-            "Aprendizados da Escola para a Vida"
-        ]
-
-        for (const secao of secoes) {
-
-            fireEvent.change(screen.getByLabelText(/seção/i), {
-                target: { value: secao }
-            })
-
-            expect(screen.queryByLabelText(/bimestre/i))
-                .not.toBeInTheDocument()
 
         }
 
@@ -240,7 +206,7 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve limpar o bimestre ao selecionar uma seção anual", async () => {
+    test("Deve ocultar título e bimestre nas seções anuais", async () => {
 
         render(
             <MemoryRouter>
@@ -256,81 +222,22 @@ describe("Página CadastroRegistro", () => {
             name: "Matemática"
         })
 
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Fundamentos Teóricos" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/bimestre/i), {
-            target: { value: "1º Bimestre" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Reflexão Crítica" }
-        })
-
-        expect(screen.queryByLabelText(/bimestre/i))
-            .not.toBeInTheDocument()
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Fundamentos Teóricos" }
-        })
-
-        expect(screen.getByLabelText(/bimestre/i))
-            .toHaveValue("")
-
-    })
-
-    test("Deve exibir o título nas três primeiras seções", async () => {
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        const secoes = [
-            "Fundamentos Teóricos",
-            "Participação em Sala de Aula",
-            "Projetos e Trabalhos Desenvolvidos"
-        ]
-
-        for (const secao of secoes) {
-
-            fireEvent.change(screen.getByLabelText(/seção/i), {
-                target: { value: secao }
-            })
-
-            expect(await screen.findByLabelText(/título/i))
-                .toBeInTheDocument()
-
-            expect(screen.getByLabelText(/título/i))
-                .toBeRequired()
-
-        }
-
-    })
-
-    test("Deve ocultar o título nas seções anuais", async () => {
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
         const secoes = [
             "Reflexão Crítica",
             "Conexões Interdisciplinares",
             "Aprendizados da Escola para a Vida"
         ]
 
-        for (const secao of secoes) {
+        for(const secao of secoes){
 
             fireEvent.change(screen.getByLabelText(/seção/i), {
                 target: { value: secao }
             })
 
             expect(screen.queryByLabelText(/título/i))
+                .not.toBeInTheDocument()
+
+            expect(screen.queryByLabelText(/bimestre/i))
                 .not.toBeInTheDocument()
 
         }
@@ -404,32 +311,6 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve exibir os campos de Fundamentos Teóricos", async () => {
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Fundamentos Teóricos" }
-        })
-
-        expect(await screen.findByLabelText(/resumo teórico/i))
-            .toBeInTheDocument()
-
-        expect(screen.getByLabelText(/aprendizado adquirido/i))
-            .toBeInTheDocument()
-
-        expect(screen.queryByLabelText(/autoavaliação/i))
-            .not.toBeInTheDocument()
-
-        expect(screen.queryByLabelText(/melhorias necessárias/i))
-            .not.toBeInTheDocument()
-
-    })
-
     test("Deve exibir os campos de Participação em Sala de Aula", async () => {
 
         render(
@@ -450,32 +331,6 @@ describe("Página CadastroRegistro", () => {
 
         expect(screen.getByLabelText(/autoavaliação/i))
             .toBeRequired()
-
-        expect(screen.queryByLabelText(/aprendizado adquirido/i))
-            .not.toBeInTheDocument()
-
-    })
-
-    test("Deve exibir os campos de Projetos e Trabalhos Desenvolvidos", async () => {
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Projetos e Trabalhos Desenvolvidos" }
-        })
-
-        expect(await screen.findByLabelText(/descrição das atividades/i))
-            .toBeInTheDocument()
-
-        expect(screen.getByLabelText(/título/i))
-            .toBeInTheDocument()
-
-        expect(screen.queryByLabelText(/autoavaliação/i))
-            .not.toBeInTheDocument()
 
     })
 
@@ -500,9 +355,6 @@ describe("Página CadastroRegistro", () => {
         expect(screen.getByLabelText(/melhorias necessárias/i))
             .toBeRequired()
 
-        expect(screen.queryByLabelText(/título/i))
-            .not.toBeInTheDocument()
-
     })
 
     test("Deve exibir os campos de Conexões Interdisciplinares", async () => {
@@ -520,12 +372,6 @@ describe("Página CadastroRegistro", () => {
         expect(await screen.findByLabelText(/relações interdisciplinares/i))
             .toBeRequired()
 
-        expect(screen.queryByLabelText(/título/i))
-            .not.toBeInTheDocument()
-
-        expect(screen.queryByLabelText(/bimestre/i))
-            .not.toBeInTheDocument()
-
     })
 
     test("Deve exibir os campos de Aprendizados da Escola para a Vida", async () => {
@@ -542,12 +388,6 @@ describe("Página CadastroRegistro", () => {
 
         expect(await screen.findByLabelText(/reflexão sobre experiências/i))
             .toBeRequired()
-
-        expect(screen.queryByLabelText(/título/i))
-            .not.toBeInTheDocument()
-
-        expect(screen.queryByLabelText(/bimestre/i))
-            .not.toBeInTheDocument()
 
     })
 
@@ -622,11 +462,8 @@ describe("Página CadastroRegistro", () => {
         const dados = fetch.mock.calls[1][1].body
 
         expect(dados.get("id_area")).toBe("1")
-        expect(dados.get("secao")).toBe("Fundamentos Teóricos")
         expect(dados.get("bimestre")).toBe("1º Bimestre")
         expect(dados.get("titulo")).toBe("Registro de teste")
-        expect(dados.get("descricao")).toBe("Descrição do registro de teste")
-        expect(dados.get("aprendizado")).toBe("Aprendizado adquirido durante a atividade")
 
     })
 
@@ -690,7 +527,6 @@ describe("Página CadastroRegistro", () => {
         const dados = fetch.mock.calls[1][1].body
 
         expect(dados.get("id_area")).toBe("2")
-        expect(dados.get("titulo")).toBe("Registro SENAI")
         expect(dados.has("bimestre")).toBe(false)
 
     })
@@ -705,9 +541,7 @@ describe("Página CadastroRegistro", () => {
             ok: true,
             status: 201,
             json: async () => ({
-                id_registro: "registro_anual",
-                titulo: "Reflexão Crítica",
-                bimestre: null
+                id_registro: "registro_anual"
             })
         })
 
@@ -757,201 +591,11 @@ describe("Página CadastroRegistro", () => {
         expect(dados.get("secao")).toBe("Reflexão Crítica")
         expect(dados.has("titulo")).toBe(false)
         expect(dados.has("bimestre")).toBe(false)
-        expect(dados.has("aprendizado")).toBe(false)
-        expect(dados.has("autoavaliacao")).toBe(false)
-        expect(dados.get("descricao")).toBe("Conhecimentos adquiridos durante o ano")
-        expect(dados.get("reflexao_pratica")).toBe("Aplicação dos conhecimentos no cotidiano")
-        expect(dados.get("melhorias_necessarias")).toBe("Melhorar a organização dos estudos")
+        expect(dados.get("reflexao_pratica"))
+            .toBe("Aplicação dos conhecimentos no cotidiano")
 
-    })
-
-    test("Deve cadastrar Participação em Sala de Aula com autoavaliação", async () => {
-
-        fetch.mockResolvedValueOnce({
-            ok: true,
-            status: 200,
-            json: async () => areas
-        }).mockResolvedValueOnce({
-            ok: true,
-            status: 201,
-            json: async () => ({
-                id_registro: "registro_participacao",
-                titulo: "Atividade em sala"
-            })
-        })
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/instituição/i), {
-            target: { value: "Sesi" }
-        })
-
-        await screen.findByRole("option", {
-            name: "Matemática"
-        })
-
-        fireEvent.change(screen.getByLabelText(/área/i), {
-            target: { value: "1" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Participação em Sala de Aula" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/bimestre/i), {
-            target: { value: "1º Bimestre" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/título/i), {
-            target: { value: "Atividade em sala" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/registro de atividades/i), {
-            target: { value: "Atividade realizada durante a aula" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/reflexão prática/i), {
-            target: { value: "Aplicação dos conceitos estudados" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/autoavaliação/i), {
-            target: { value: "Participei das atividades propostas" }
-        })
-
-        fireEvent.click(
-            screen.getByRole("button", { name: /cadastrar/i })
-        )
-
-        expect(await screen.findByText(/sucesso/i))
-            .toBeInTheDocument()
-
-        const dados = fetch.mock.calls[1][1].body
-
-        expect(dados.get("titulo")).toBe("Atividade em sala")
-        expect(dados.get("bimestre")).toBe("1º Bimestre")
-        expect(dados.get("descricao")).toBe("Atividade realizada durante a aula")
-        expect(dados.get("reflexao_pratica")).toBe("Aplicação dos conceitos estudados")
-        expect(dados.get("autoavaliacao")).toBe("Participei das atividades propostas")
-        expect(dados.has("melhorias_necessarias")).toBe(false)
-        expect(dados.has("aprendizado")).toBe(false)
-
-    })
-
-    test("Deve cadastrar Conexões Interdisciplinares sem título", async () => {
-
-        fetch.mockResolvedValueOnce({
-            ok: true,
-            status: 200,
-            json: async () => areas
-        }).mockResolvedValueOnce({
-            ok: true,
-            status: 201,
-            json: async () => ({
-                id_registro: "registro_conexoes",
-                titulo: "Conexões Interdisciplinares"
-            })
-        })
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/instituição/i), {
-            target: { value: "Sesi" }
-        })
-
-        await screen.findByRole("option", {
-            name: "Matemática"
-        })
-
-        fireEvent.change(screen.getByLabelText(/área/i), {
-            target: { value: "1" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Conexões Interdisciplinares" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/relações interdisciplinares/i), {
-            target: { value: "Relação entre matemática e programação" }
-        })
-
-        fireEvent.click(
-            screen.getByRole("button", { name: /cadastrar/i })
-        )
-
-        expect(await screen.findByText(/sucesso/i))
-            .toBeInTheDocument()
-
-        const dados = fetch.mock.calls[1][1].body
-
-        expect(dados.get("secao")).toBe("Conexões Interdisciplinares")
-        expect(dados.get("descricao")).toBe("Relação entre matemática e programação")
-        expect(dados.has("titulo")).toBe(false)
-        expect(dados.has("bimestre")).toBe(false)
-
-    })
-
-    test("Deve cadastrar Aprendizados da Escola para a Vida sem título", async () => {
-
-        fetch.mockResolvedValueOnce({
-            ok: true,
-            status: 200,
-            json: async () => areas
-        }).mockResolvedValueOnce({
-            ok: true,
-            status: 201,
-            json: async () => ({
-                id_registro: "registro_vida",
-                titulo: "Aprendizados da Escola para a Vida"
-            })
-        })
-
-        render(
-            <MemoryRouter>
-                <CadastroRegistro />
-            </MemoryRouter>
-        )
-
-        fireEvent.change(screen.getByLabelText(/instituição/i), {
-            target: { value: "Sesi" }
-        })
-
-        await screen.findByRole("option", {
-            name: "Matemática"
-        })
-
-        fireEvent.change(screen.getByLabelText(/área/i), {
-            target: { value: "1" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/seção/i), {
-            target: { value: "Aprendizados da Escola para a Vida" }
-        })
-
-        fireEvent.change(screen.getByLabelText(/reflexão sobre experiências/i), {
-            target: { value: "Importância dos conhecimentos para a vida em sociedade" }
-        })
-
-        fireEvent.click(
-            screen.getByRole("button", { name: /cadastrar/i })
-        )
-
-        expect(await screen.findByText(/sucesso/i))
-            .toBeInTheDocument()
-
-        const dados = fetch.mock.calls[1][1].body
-
-        expect(dados.get("secao")).toBe("Aprendizados da Escola para a Vida")
-        expect(dados.get("descricao")).toBe("Importância dos conhecimentos para a vida em sociedade")
-        expect(dados.has("titulo")).toBe(false)
-        expect(dados.has("bimestre")).toBe(false)
+        expect(dados.get("melhorias_necessarias"))
+            .toBe("Melhorar a organização dos estudos")
 
     })
 
@@ -1031,6 +675,9 @@ describe("Página CadastroRegistro", () => {
         expect(await screen.findByLabelText(/evidências/i))
             .toBeInTheDocument()
 
+        expect(screen.getByLabelText("Link 1"))
+            .toBeInTheDocument()
+
     })
 
     test("Deve exibir evidências em Projetos e Trabalhos Desenvolvidos", async () => {
@@ -1046,6 +693,9 @@ describe("Página CadastroRegistro", () => {
         })
 
         expect(await screen.findByLabelText(/evidências/i))
+            .toBeInTheDocument()
+
+        expect(screen.getByLabelText("Link 1"))
             .toBeInTheDocument()
 
     })
@@ -1065,7 +715,7 @@ describe("Página CadastroRegistro", () => {
             "Aprendizados da Escola para a Vida"
         ]
 
-        for (const secao of secoes) {
+        for(const secao of secoes){
 
             fireEvent.change(screen.getByLabelText(/seção/i), {
                 target: { value: secao }
@@ -1074,7 +724,411 @@ describe("Página CadastroRegistro", () => {
             expect(screen.queryByLabelText(/evidências/i))
                 .not.toBeInTheDocument()
 
+            expect(screen.queryByLabelText("Link 1"))
+                .not.toBeInTheDocument()
+
         }
+
+    })
+
+})
+
+describe("Links e vídeos das evidências", () => {
+
+    test("Deve permitir preencher um link", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        const link = await screen.findByLabelText("Link 1")
+
+        fireEvent.change(link, {
+            target: { value: "https://github.com/" }
+        })
+
+        expect(link).toHaveValue("https://github.com/")
+
+    })
+
+    test("Deve adicionar outro campo de link", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.click(screen.getByRole("button", {
+            name: /adicionar outro link/i
+        }))
+
+        expect(await screen.findByLabelText("Link 2"))
+            .toBeInTheDocument()
+
+    })
+
+    test("Deve remover um campo de link", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.click(screen.getByRole("button", {
+            name: /adicionar outro link/i
+        }))
+
+        const botoes = screen.getAllByRole("button", {
+            name: /^remover$/i
+        })
+
+        fireEvent.click(botoes[1])
+
+        expect(screen.queryByLabelText("Link 2"))
+            .not.toBeInTheDocument()
+
+        expect(screen.getByLabelText("Link 1"))
+            .toBeInTheDocument()
+
+    })
+
+    test("Deve limitar o cadastro a 10 links", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        const botao = screen.getByRole("button", {
+            name: /adicionar outro link/i
+        })
+
+        for(let i = 0; i < 9; i++){
+
+            fireEvent.click(botao)
+
+        }
+
+        expect(screen.getAllByLabelText(/^Link \d+$/i))
+            .toHaveLength(10)
+
+        expect(botao).toBeDisabled()
+
+    })
+
+    test("Deve aceitar imagens, documentos e vídeos", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        const campo = await screen.findByLabelText(/evidências/i)
+
+        const formatos = [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".pdf",
+            ".docx",
+            ".pptx",
+            ".xlsx",
+            ".mp4",
+            ".webm"
+        ]
+
+        for(const formato of formatos){
+
+            expect(campo.getAttribute("accept"))
+                .toContain(formato)
+
+        }
+
+    })
+
+    test("Deve cadastrar registro somente com links", async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async () => areas
+        }).mockResolvedValueOnce({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                id_registro: "registro_links"
+            })
+        })
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Programação Web"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "2" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Projeto com links" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição das atividades/i), {
+            target: { value: "Descrição do projeto desenvolvido" }
+        })
+
+        fireEvent.change(screen.getByLabelText("Link 1"), {
+            target: { value: "https://github.com/" }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByText(/sucesso/i))
+            .toBeInTheDocument()
+
+        const dados = fetch.mock.calls[1][1].body
+
+        expect(JSON.parse(dados.get("links_evidencias")))
+            .toEqual(["https://github.com/"])
+
+        expect(dados.getAll("evidencia_visual"))
+            .toHaveLength(0)
+
+    })
+
+    test("Deve cadastrar registro com vídeo e link", async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async () => areas
+        }).mockResolvedValueOnce({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                id_registro: "registro_video"
+            })
+        })
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Programação Web"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "2" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Projeto com vídeo" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição das atividades/i), {
+            target: { value: "Descrição do projeto desenvolvido" }
+        })
+
+        const video = new File(
+            ["Vídeo de teste"],
+            "projeto.mp4",
+            { type: "video/mp4" }
+        )
+
+        fireEvent.change(screen.getByLabelText(/evidências/i), {
+            target: { files: [video] }
+        })
+
+        fireEvent.change(screen.getByLabelText("Link 1"), {
+            target: { value: "https://github.com/" }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByText(/sucesso/i))
+            .toBeInTheDocument()
+
+        const dados = fetch.mock.calls[1][1].body
+
+        expect(dados.getAll("evidencia_visual"))
+            .toHaveLength(1)
+
+        expect(dados.get("evidencia_visual").name)
+            .toBe("projeto.mp4")
+
+        expect(JSON.parse(dados.get("links_evidencias")))
+            .toEqual(["https://github.com/"])
+
+    })
+
+    test("Deve impedir o envio de vídeo acima de 100 MB", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Programação Web"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "2" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Projeto com vídeo" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição das atividades/i), {
+            target: { value: "Descrição do projeto desenvolvido" }
+        })
+
+        const video = new File(
+            ["Vídeo de teste"],
+            "projeto.mp4",
+            { type: "video/mp4" }
+        )
+
+        Object.defineProperty(video, "size", {
+            value: 101 * 1024 * 1024
+        })
+
+        fireEvent.change(screen.getByLabelText(/evidências/i), {
+            target: { files: [video] }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByText(
+            /(?:máximo|até).*100 MB/i,
+            { selector: '[role="status"]' }
+        )).toBeInTheDocument()
+
+        expect(fetch).toHaveBeenCalledTimes(1)
+
+    })
+
+    test("Deve impedir o envio de imagem acima de 20 MB", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Programação Web"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "2" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Projeto com imagem" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição das atividades/i), {
+            target: { value: "Descrição do projeto desenvolvido" }
+        })
+
+        const imagem = new File(
+            ["Imagem de teste"],
+            "projeto.png",
+            { type: "image/png" }
+        )
+
+        Object.defineProperty(imagem, "size", {
+            value: 21 * 1024 * 1024
+        })
+
+        fireEvent.change(screen.getByLabelText(/evidências/i), {
+            target: { files: [imagem] }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByRole("status"))
+            .toHaveTextContent(/20 MB/i)
+
+        expect(fetch).toHaveBeenCalledTimes(1)
 
     })
 

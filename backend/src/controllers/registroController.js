@@ -27,6 +27,87 @@ const secoesComEvidencias = [
     "Projetos e Trabalhos Desenvolvidos"
 ]
 
+const validarArquivos = (arquivos = []) => {
+
+    for(const arquivo of arquivos){
+
+        const video = arquivo.mimetype === "video/mp4" ||
+                      arquivo.mimetype === "video/webm"
+
+        const limite = video ? 100 * 1024 * 1024 : 20 * 1024 * 1024
+
+        if(arquivo.size > limite){
+
+            return video
+                ? "Cada vídeo deve ter no máximo 100 MB"
+                : "Cada imagem ou documento deve ter no máximo 20 MB"
+
+        }
+
+    }
+
+    return null
+
+}
+
+const validarLinks = (links) => {
+
+    if(links === undefined){
+        return undefined
+    }
+
+    if(typeof links === "string"){
+
+        try{
+
+            links = JSON.parse(links)
+
+        }catch(error){
+
+            return null
+
+        }
+
+    }
+
+    if(!Array.isArray(links) || links.length > 10){
+        return null
+    }
+
+    const linksValidos = []
+
+    for(const link of links){
+
+        if(typeof link !== "string" || !link.trim() || link.length > 2048){
+            return null
+        }
+
+        try{
+
+            const url = new URL(link.trim())
+
+            if(url.protocol !== "http:" && url.protocol !== "https:"){
+                return null
+            }
+
+            if(url.username || url.password){
+                return null
+            }
+
+            linksValidos.push(url.href)
+
+        }catch(error){
+
+            return null
+
+        }
+
+    }
+
+    return linksValidos
+
+}
+
 export const listarRegistros = async(request, response)=>{
     try {
         const registro = await registroModel.findAll()
@@ -52,7 +133,8 @@ export const cadastrarRegistro = async(request, response)=>{
             aprendizado,
             reflexao_pratica,
             autoavaliacao,
-            melhorias_necessarias
+            melhorias_necessarias,
+            links_evidencias
         } = request.body
 
         const id_usuario = request.usuario.id_usuario
@@ -67,7 +149,32 @@ export const cadastrarRegistro = async(request, response)=>{
             return response.status(400).json({message: "Preencha todos os campos obrigatórios"})
         }
 
-        if(!secoesComEvidencias.includes(secao) && evidencia_visual.length > 0){
+        const erroArquivo = validarArquivos(request.files)
+
+        if(erroArquivo){
+
+            await limparUpload(request)
+
+            return response.status(400).json({message: erroArquivo})
+
+        }
+
+        const links = validarLinks(links_evidencias)
+
+        if(links === null){
+
+            await limparUpload(request)
+
+            return response.status(400).json({
+                message: "Informe até 10 links válidos com HTTP ou HTTPS"
+            })
+
+        }
+
+        const linksFinal = links || []
+
+        if(!secoesComEvidencias.includes(secao) && (evidencia_visual.length > 0 || linksFinal.length > 0)){
+
             await limparUpload(request)
 
             return response.status(400).json({message: "Esta seção não permite evidências"})
@@ -102,7 +209,8 @@ export const cadastrarRegistro = async(request, response)=>{
             reflexao_pratica,
             autoavaliacao,
             melhorias_necessarias,
-            evidencia_visual
+            evidencia_visual,
+            links_evidencias: linksFinal
         })
 
         salvou = true
@@ -165,7 +273,8 @@ export const atualizarRegistro = async(request, response)=>{
             aprendizado,
             reflexao_pratica,
             autoavaliacao,
-            melhorias_necessarias
+            melhorias_necessarias,
+            links_evidencias
         } = request.body
 
         if(!registro){
@@ -197,7 +306,34 @@ export const atualizarRegistro = async(request, response)=>{
             return response.status(400).json({message: "Preencha todos os campos obrigatórios"})
         }
 
-        if(!secoesComEvidencias.includes(secao) && evidencia_visual?.length > 0){
+        const erroArquivo = validarArquivos(request.files)
+
+        if(erroArquivo){
+
+            await limparUpload(request)
+
+            return response.status(400).json({message: erroArquivo})
+
+        }
+
+        const links = validarLinks(links_evidencias)
+
+        if(links === null){
+
+            await limparUpload(request)
+
+            return response.status(400).json({
+                message: "Informe até 10 links válidos com HTTP ou HTTPS"
+            })
+
+        }
+
+        const linksFinal = links !== undefined
+            ? links
+            : registro.links_evidencias || []
+
+        if(!secoesComEvidencias.includes(secao) && (evidencia_visual?.length > 0 || linksFinal.length > 0)){
+
             await limparUpload(request)
 
             return response.status(400).json({message: "Esta seção não permite evidências"})
@@ -231,7 +367,8 @@ export const atualizarRegistro = async(request, response)=>{
             reflexao_pratica,
             autoavaliacao,
             melhorias_necessarias,
-            evidencia_visual
+            evidencia_visual,
+            links_evidencias: linksFinal
         })
 
         salvou = true
@@ -286,7 +423,8 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             aprendizado,
             reflexao_pratica,
             autoavaliacao,
-            melhorias_necessarias
+            melhorias_necessarias,
+            links_evidencias
         } = request.body
 
         const imagensAntigas = registro.evidencia_visual
@@ -319,7 +457,34 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             }
         }
 
-        if(!secoesComEvidencias.includes(secaoFinal) && evidencia_visual?.length > 0){
+        const erroArquivo = validarArquivos(request.files)
+
+        if(erroArquivo){
+
+            await limparUpload(request)
+
+            return response.status(400).json({message: erroArquivo})
+
+        }
+
+        const links = validarLinks(links_evidencias)
+
+        if(links === null){
+
+            await limparUpload(request)
+
+            return response.status(400).json({
+                message: "Informe até 10 links válidos com HTTP ou HTTPS"
+            })
+
+        }
+
+        const linksFinal = links !== undefined
+            ? links
+            : registro.links_evidencias || []
+
+        if(!secoesComEvidencias.includes(secaoFinal) && (evidencia_visual?.length > 0 || linksFinal.length > 0)){
+
             await limparUpload(request)
 
             return response.status(400).json({message: "Esta seção não permite evidências"})
@@ -351,7 +516,8 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             reflexao_pratica,
             autoavaliacao,
             melhorias_necessarias,
-            evidencia_visual
+            evidencia_visual,
+            links_evidencias: linksFinal
         })
 
         salvou = true

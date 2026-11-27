@@ -59,6 +59,28 @@ function Registro() {
         registro.secao === "Participação em Sala de Aula" ||
         registro.secao === "Reflexão Crítica"
 
+    const arquivos = registro.evidencia_visual || []
+
+    const links = (registro.links_evidencias || []).filter(link => {
+
+        try {
+
+            const url = new URL(link)
+
+            return (
+                (url.protocol === "http:" || url.protocol === "https:") &&
+                !url.username &&
+                !url.password
+            )
+
+        } catch (error) {
+
+            return false
+
+        }
+
+    })
+
     let rotuloDescricao = "Descrição"
 
     if (registro.secao === "Fundamentos Teóricos") {
@@ -155,38 +177,92 @@ function Registro() {
 
                             <h2>Evidências</h2>
 
-                            <div className="evidencias">
+                            {arquivos.length > 0 && (
 
-                                {(registro.evidencia_visual || []).map(arquivo => {
+                                <div className="evidencias">
 
-                                    const url = `http://localhost:3333/public/${encodeURIComponent(arquivo)}`
-                                    const nome = arquivo.toLowerCase()
+                                    {arquivos.map(arquivo => {
 
-                                    const imagem = nome.endsWith(".jpg") ||
-                                                   nome.endsWith(".jpeg") ||
-                                                   nome.endsWith(".png") ||
-                                                   nome.endsWith(".webp")
+                                        const url = `http://localhost:3333/public/${encodeURIComponent(arquivo)}`
+                                        const nome = arquivo.toLowerCase()
 
-                                    return (
-                                        <div className="evidencia" key={arquivo}>
+                                        const imagem = nome.endsWith(".jpg") ||
+                                                       nome.endsWith(".jpeg") ||
+                                                       nome.endsWith(".png") ||
+                                                       nome.endsWith(".webp")
 
-                                            <a href={url} target="_blank" rel="noopener noreferrer">
+                                        const video = nome.endsWith(".mp4") ||
+                                                      nome.endsWith(".webm")
 
-                                                {imagem ? (
-                                                    <img src={url} alt="Evidência da atividade" />
+                                        return (
+                                            <div className="evidencia" key={arquivo}>
+
+                                                {video ? (
+
+                                                    <video
+                                                        className="video-evidencia"
+                                                        src={url}
+                                                        controls
+                                                        preload="metadata"
+                                                    >
+                                                        Seu navegador não suporta vídeos.
+                                                    </video>
+
                                                 ) : (
-                                                    <span className="botao-home"> Acessar documento </span>
+
+                                                    <a href={url} target="_blank" rel="noopener noreferrer">
+
+                                                        {imagem ? (
+                                                            <img src={url} alt="Evidência da atividade" />
+                                                        ) : (
+                                                            <span className="botao-home"> Acessar documento </span>
+                                                        )}
+
+                                                    </a>
+
                                                 )}
 
+                                            </div>
+                                        )
+                                    })}
+
+                                </div>
+
+                            )}
+
+                            {links.length > 0 && (
+
+                                <div className="links-registro">
+
+                                    <h3>Links relacionados</h3>
+
+                                    {links.map((link, indice) => (
+
+                                        <div className="link-evidencia" key={indice}>
+
+                                            <p>{link}</p>
+
+                                            <a
+                                                href={link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="botao-home"
+                                            >
+                                                Acessar link {indice + 1}
                                             </a>
 
                                         </div>
-                                    )
-                                })}
 
-                            </div>
+                                    ))}
 
-                            {!registro.evidencia_visual?.length && ( <p>Nenhuma evidência cadastrada.</p> )}
+                                </div>
+
+                            )}
+
+                            {arquivos.length === 0 && links.length === 0 && (
+                                <p>Nenhuma evidência cadastrada.</p>
+                            )}
+
                         </>
                     )}
 

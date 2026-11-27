@@ -851,3 +851,143 @@ h1 {
         height: auto;
     }
   }
+
+  /* LINKS DAS EVIDÊNCIAS */
+
+.links-evidencias {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.campo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-admin .campo-link input {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.form-admin .remover-link {
+    width: auto;
+    background-color: var(--verde-claro);
+    color: var(--verde-escuro);
+    padding: 12px 20px;
+}
+
+.form-admin .remover-link:hover {
+    background-color: var(--verde-suave);
+}
+
+.form-admin .adicionar-link {
+    background-color: transparent;
+    color: var(--verde-medio);
+    border: 1px solid var(--verde-medio);
+}
+
+.form-admin .adicionar-link:hover {
+    background-color: var(--verde-claro);
+    color: var(--verde-escuro);
+}
+
+.form-admin .adicionar-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* VÍDEOS DAS EVIDÊNCIAS */
+
+.video-evidencia {
+    display: block;
+    width: 400px;
+    max-width: 100%;
+    max-height: 350px;
+    background-color: #000000;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+/* EVIDÊNCIAS ATUAIS */
+
+.evidencia-atual {
+    background-color: var(--verde-claro);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0 20px;
+}
+
+.evidencia-atual a {
+    color: var(--verde-escuro);
+    overflow-wrap: anywhere;
+}
+
+.evidencia-atual a:hover {
+    text-decoration: underline;
+}
+
+.evidencia-atual .video-evidencia {
+    width: 100%;
+}
+
+/* LINKS NA PÁGINA DO REGISTRO */
+
+.links-registro {
+    margin-top: 25px;
+}
+
+.links-registro h3 {
+    color: var(--titulo);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.link-evidencia {
+    background-color: var(--verde-claro);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.link-evidencia p {
+    color: var(--verde-escuro);
+    font-size: 16px;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.link-evidencia .botao-home {
+    margin-top: 15px;
+}
+
+/* RESPONSIVIDADE DAS EVIDÊNCIAS */
+
+@media (max-width: 768px) {
+
+    .campo-link {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-admin .remover-link {
+        width: 100%;
+    }
+
+    .video-evidencia {
+        width: 100%;
+        height: auto;
+    }
+
+    .evidencia {
+        width: 100%;
+    }
+
+    .link-evidencia {
+        padding: 15px;
+    }
+
+}
