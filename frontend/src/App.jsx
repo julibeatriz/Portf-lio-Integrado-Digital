@@ -8,6 +8,7 @@ import Sesi from './pages/Sesi.jsx'
 import Senai from './pages/Senai.jsx'
 import Area from './pages/area.jsx'
 import Secao from './pages/Secao.jsx'
+import Registro from './pages/Registro.jsx'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/senai" element={<Senai/>}/>
         <Route path="/area/:id" element={<Area/>}/>
         <Route path="/area/:id/secao/:secao" element={<Secao/>}/>
+        <Route path="/registro/:id" element={<Registro/>}/>
       </Routes> 
     </main>  
     

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 function Home() {
     return (
         <div>
@@ -10,30 +12,33 @@ function Home() {
 
             <div className="cards-formacao">
 
-                <div className="card-formacao">
-                    <h3>SESI</h3>
+            <div className="card-formacao">
+                <h3>SESI</h3>
 
-                    <p>
-                        Atividades, conhecimentos e aprendizados da formação escolar.
-                    </p>
+                <p>
+                    Atividades, conhecimentos e aprendizados
+                    da formação escolar.
+                </p>
 
-                    <Link to="/sesi" className="botao-home"> Acessar portfólio </Link>
-                </div>
+                <Link to="/sesi" className="botao-home">
+                    Acessar portfólio
+                </Link>
+            </div>
 
-                <div className="cards-formacao">
+            <div className="card-formacao">
+                <h3>SENAI</h3>
 
-                <div className="card-formacao">
-                    <h3>SENAI</h3>
+                <p>
+                    Projetos, experiências e conhecimentos
+                    da formação profissional.
+                </p>
 
-                    <p>
-                        Projetos, experiências e conhecimentos da formação profissional
-                    </p>
+                <Link to="/senai" className="botao-home">
+                    Acessar portfólio
+                </Link>
+            </div>
 
-                    <Link to="/senai" className="botao-home"> Acessar portfólio </Link>
-                </div>
-                </div>
-
-                </div>
+        </div>
             </section>
         </div>
 

@@ -456,7 +456,63 @@ h1 {
 }
 
 /* REGISTROS */
+.registro-conteudo {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
 
+.registro-detalhes {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 35px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.registro-detalhes h2 {
+    color: var(--titulo);
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.registro-detalhes p {
+    color: var(--texto);
+    font-size: 18px;
+    line-height: 1.8;
+    text-align: justify;
+    white-space: pre-wrap;
+}
+
+.registro-detalhes hr {
+    border: none;
+    border-top: 1px solid var(--verde-claro);
+    margin: 30px 0;
+}
+
+.evidencias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.evidencia {
+    background-color: var(--verde-claro);
+    border-radius: 15px;
+    padding: 15px;
+    max-width: 100%;
+}
+
+.evidencia img {
+    width: 250px;
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.evidencia .botao-home {
+    margin: 0;
+}
 
 /* LOGIN */
 
