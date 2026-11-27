@@ -14,6 +14,7 @@ import RotaProtegida from './routes/RoutaProtegida.jsx'
 import Painel from './pages/admin/Painel.jsx'
 import CadastroArea from './pages/admin/CadastroArea.jsx'
 import CadastroRegistro from './pages/admin/CadastroRegistro.jsx'
+import GerenciarRegistros from './pages/admin/GerenciarRegistro.jsx'
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
         <Route path="/login" element={<Login/>}/>
         <Route path="/admin" element={<RotaProtegida> <Painel/></RotaProtegida>}/>
         <Route path="/admin/areas" element={<RotaProtegida> <CadastroArea/></RotaProtegida>}/>
-        <Route path="/admin/registros" element={<RotaProtegida> <CadastroRegistro/></RotaProtegida>}/>
+        <Route path="/admin/registros/cadastrar" element={<RotaProtegida> <CadastroRegistro/></RotaProtegida>}/>
+        <Route path="/admin/registros" element={<RotaProtegida> <GerenciarRegistros/></RotaProtegida>}/>
       </Routes> 
     </main>  
     
@@ -41,4 +43,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
