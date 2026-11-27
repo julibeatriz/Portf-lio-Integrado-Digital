@@ -359,7 +359,7 @@ h1 {
 }
 
 
-/* ÁREAS */
+/*ÁREAS */
 
 .area .portfolio-apresentacao {
     position: relative;
@@ -455,7 +455,7 @@ h1 {
     padding: 30px;
 }
 
-/* REGISTROS */
+/*REGISTROS */
 .registro-conteudo {
     background-color: var(--verde-claro);
     padding: 50px 10%;
@@ -514,8 +514,8 @@ h1 {
     margin: 0;
 }
 
-/* LOGIN */
-/* PÁGINA DE LOGIN */
+
+/*LOGIN */
 
 .login {
     background-color: var(--verde-claro);
@@ -603,4 +603,35 @@ h1 {
     margin-bottom: 15px;
 }
 
-/* PAINEL ADMINISTRATIVO */
+/*PAINEL ADMINITRATIVO */
+
+
+.painel .portfolio-apresentacao {
+    position: relative;
+}
+
+.painel-opcoes {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
+
+.painel .cards-areas {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.painel .card-area {
+    width: 400px;
+    min-height: 230px;
+}
+
+.botao-sair {
+    display: block;
+    margin-left: auto;
+    background-color: var(--verde-escuro);
+    color: var(--branco);
+}
+
+.botao-sair:hover {
+    background-color: var(--verde-medio);
+}
