@@ -13,6 +13,7 @@ import Login from './pages/Login.jsx'
 import RotaProtegida from './routes/RoutaProtegida.jsx'
 import Painel from './pages/admin/Painel.jsx'
 import CadastroArea from './pages/admin/CadastroArea.jsx'
+import CadastroRegistro from './pages/admin/CadastroRegistro.jsx'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login/>}/>
         <Route path="/admin" element={<RotaProtegida> <Painel/></RotaProtegida>}/>
         <Route path="/admin/areas" element={<RotaProtegida> <CadastroArea/></RotaProtegida>}/>
+        <Route path="/admin/registros" element={<RotaProtegida> <CadastroRegistro/></RotaProtegida>}/>
       </Routes> 
     </main>  
     

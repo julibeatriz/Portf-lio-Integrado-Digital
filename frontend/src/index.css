@@ -694,3 +694,28 @@ h1 {
     margin-bottom: 20px;
     font-size: 17px;
 }
+
+/*CADATRO DE REGISTROS */
+
+.form-admin input[type="file"] {
+    background-color: var(--verde-claro);
+    border: 2px dashed var(--verde-medio);
+    padding: 20px;
+    cursor: pointer;
+}
+
+.form-admin input[type="file"]::file-selector-button {
+    background-color: var(--verde-medio);
+    color: var(--branco);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.aviso-arquivos {
+    color: var(--verde-medio);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
