@@ -1,0 +1,226 @@
+import { useState, useEffect } from "react"
+import { Link, useParams, useNavigate } from "react-router-dom"
+import { API_URL } from "../../services/api.js"
+
+function EditarRegistro() {
+
+    const { id } = useParams()
+    const navigate = useNavigate()
+
+    const [registro, setRegistro] = useState(null)
+    const [areas, setAreas] = useState([])
+    const [mensagem, setMensagem] = useState("")
+
+    const secoes = [
+        "Quem Sou Eu",
+        "Fundamentos Teóricos",
+        "Participação em Sala de Aula",
+        "Projetos e Trabalhos Desenvolvidos",
+        "Reflexão Crítica",
+        "Conexões Interdisciplinares",
+        "Aprendizados da Escola para a Vida"
+    ]
+
+    const bimestres = [
+        "1º Bimestre",
+        "2º Bimestre",
+        "3º Bimestre",
+        "4º Bimestre"
+    ]
+
+    useEffect(() => {
+
+        async function buscarDados() {
+            try {
+                const respostaRegistro = await fetch(`${API_URL}/registros/${id}`)
+
+                const respostaAreas = await fetch(`${API_URL}/areas`)
+
+                if (!respostaRegistro.ok || !respostaAreas.ok) {
+                    setMensagem("Erro ao buscar dados.")
+                    return
+                }
+
+                const dadosRegistro = await respostaRegistro.json()
+                const dadosAreas = await respostaAreas.json()
+
+                setRegistro(dadosRegistro)
+                setAreas(dadosAreas)
+
+            } catch (error) {
+                console.log(error)
+                setMensagem("Erro ao conectar com o servidor.")
+            }
+        }
+
+        buscarDados()
+
+    }, [id])
+
+    async function atualizar(event) {
+        event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+        const token = sessionStorage.getItem("token")
+
+        if (!formData.get("aprendizado").trim()) {
+            formData.delete("aprendizado")
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/registros/${id}`, {
+                    method: "PUT",
+                    headers: {Authorization: `Bearer ${token}`},
+                    body: formData
+                }
+            )
+
+            if (response.status === 401) {
+                sessionStorage.removeItem("token")
+                navigate("/login")
+                return
+            }
+
+            const dados = await response.json()
+
+            if (!response.ok) {
+                setMensagem(dados.message || "Erro ao atualizar.")
+                return
+            }
+
+            navigate("/admin/registros")
+
+        } catch (error) {
+            setMensagem("Erro ao conectar com o servidor.")
+        }
+    }
+
+    if (!registro) {
+        return <p>{mensagem || "Carregando registro..."}</p>
+    }
+
+    return (
+        <div className="cadastro-admin">
+
+            <section className="portfolio-apresentacao">
+
+                <Link to="/admin/registros" className="voltar"> ← Voltar ao gerenciamento</Link>
+
+                <h1>Editar registro</h1>
+
+                <p>Atualize as informações do seu registro.</p>
+
+            </section>
+
+            <form key={registro.id_registro} className="form-admin" onSubmit={atualizar}>
+
+                <label htmlFor="area">Área de conhecimento</label>
+
+                <select
+                    id="area"
+                    name="id_area"
+                    defaultValue={registro.id_area}
+                    required
+                >
+                    {areas.map(area => (
+                        <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option>
+                    ))}
+                </select>
+
+                <label htmlFor="secao">Seção</label>
+
+                <select
+                    id="secao"
+                    name="secao"
+                    defaultValue={registro.secao}
+                    required
+                >
+                    {secoes.map(item => ( <option key={item} value={item}> {item} </option>))}
+                </select>
+
+                <label htmlFor="bimestre">Bimestre</label>
+
+                <select
+                    id="bimestre"
+                    name="bimestre"
+                    defaultValue={registro.bimestre || ""}
+                    required
+                >
+                    <option value="">Selecione o bimestre</option>
+
+                    {bimestres.map(item => ( <option key={item} value={item}> {item} </option>
+                    ))}
+                </select>
+
+                <label htmlFor="titulo">Título</label>
+
+                <input
+                    id="titulo"
+                    type="text"
+                    name="titulo"
+                    defaultValue={registro.titulo}
+                    minLength={3}
+                    maxLength={200}
+                    required
+                />
+
+                <label htmlFor="descricao">Descrição da atividade</label>
+
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    defaultValue={registro.descricao}
+                    rows={5}
+                    minLength={5}
+                    maxLength={1000}
+                    required
+                />
+
+                <label htmlFor="aprendizado">Aprendizado adquirido</label>
+
+                <textarea
+                    id="aprendizado"
+                    name="aprendizado"
+                    defaultValue={registro.aprendizado || ""}
+                    rows={5}
+                    minLength={10}
+                    maxLength={1200}
+                />
+
+                <label>Evidências atuais</label>
+
+                <div className="arquivos-atuais">
+
+                    {(registro.evidencia_visual || []).map(arquivo => (
+                        <a key={arquivo} href={`http://localhost:3333/public/${encodeURIComponent(arquivo)}`} target="_blank" rel="noopener noreferrer"> {arquivo} </a>
+                    ))}
+
+                    {!registro.evidencia_visual?.length && (
+                        <p>Nenhuma evidência cadastrada.</p>
+                    )}
+
+                </div>
+
+                <label htmlFor="evidencias">Novas evidências</label>
+
+                <input
+                    id="evidencias"
+                    type="file"
+                    name="evidencia_visual"
+                    accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
+                    multiple
+                />
+
+                <p className="aviso-arquivos"> Os novos arquivos substituirão as evidências atuais. Deixe vazio para manter os arquivos existentes. </p>
+
+                {mensagem && ( <p className="mensagem-admin" role="status"> {mensagem}</p>)}
+
+                <button type="submit"> Salvar alterações </button>
+
+            </form>
+
+        </div>
+    )
+}
+
+export default EditarRegistro;

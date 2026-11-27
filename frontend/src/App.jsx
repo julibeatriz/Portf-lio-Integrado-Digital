@@ -15,6 +15,7 @@ import Painel from './pages/admin/Painel.jsx'
 import CadastroArea from './pages/admin/CadastroArea.jsx'
 import CadastroRegistro from './pages/admin/CadastroRegistro.jsx'
 import GerenciarRegistros from './pages/admin/GerenciarRegistro.jsx'
+import EditarRegistro from './pages/admin/EditarRegistro.jsx'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/admin/areas" element={<RotaProtegida> <CadastroArea/></RotaProtegida>}/>
         <Route path="/admin/registros/cadastrar" element={<RotaProtegida> <CadastroRegistro/></RotaProtegida>}/>
         <Route path="/admin/registros" element={<RotaProtegida> <GerenciarRegistros/></RotaProtegida>}/>
+        <Route path="/admin/registros/editar/:id" element={<RotaProtegida> <EditarRegistro/></RotaProtegida>}/>
       </Routes> 
     </main>  
     

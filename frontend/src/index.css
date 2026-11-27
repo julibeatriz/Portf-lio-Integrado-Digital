@@ -785,3 +785,23 @@ h1 {
     background-color: #B91C1C;
     color: var(--branco);
 }
+
+/* EDIÇÃO DE REGISTROS */
+
+.arquivos-atuais {
+    background-color: var(--verde-claro);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.arquivos-atuais a {
+    display: block;
+    color: var(--verde-escuro);
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.arquivos-atuais a:hover {
+    text-decoration: underline;
+}
