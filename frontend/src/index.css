@@ -635,3 +635,62 @@ h1 {
 .botao-sair:hover {
     background-color: var(--verde-medio);
 }
+
+/* CADASTRO DE ÁREA*/
+
+.cadastro-admin {
+    background-color: var(--verde-claro);
+    padding-bottom: 60px;
+}
+
+.form-admin {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 35px;
+    width: 600px;
+    max-width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-admin label {
+    color: var(--titulo);
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.form-admin input,
+.form-admin select,
+.form-admin textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--verde-suave);
+    border-radius: 10px;
+    font-size: 17px;
+    background-color: var(--branco);
+    color: var(--texto);
+    margin-bottom: 25px;
+}
+
+.form-admin textarea {
+    resize: vertical;
+}
+
+.form-admin input:focus,
+.form-admin select:focus,
+.form-admin textarea:focus {
+    outline: 2px solid var(--verde-medio);
+}
+
+.form-admin button {
+    width: 100%;
+}
+
+.mensagem-admin {
+    color: var(--verde-escuro);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 17px;
+}

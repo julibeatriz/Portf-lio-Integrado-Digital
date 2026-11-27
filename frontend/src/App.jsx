@@ -12,6 +12,7 @@ import Registro from './pages/Registro.jsx'
 import Login from './pages/Login.jsx'
 import RotaProtegida from './routes/RoutaProtegida.jsx'
 import Painel from './pages/admin/Painel.jsx'
+import CadastroArea from './pages/admin/CadastroArea.jsx'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/registro/:id" element={<Registro/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/admin" element={<RotaProtegida> <Painel/></RotaProtegida>}/>
+        <Route path="/admin/areas" element={<RotaProtegida> <CadastroArea/></RotaProtegida>}/>
       </Routes> 
     </main>  
     
