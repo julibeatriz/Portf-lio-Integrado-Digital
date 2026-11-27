@@ -10,7 +10,6 @@ function Area() {
     const [erro, setErro] = useState("")
 
     const secoes = [
-        "Quem Sou Eu",
         "Fundamentos Teóricos",
         "Participação em Sala de Aula",
         "Projetos e Trabalhos Desenvolvidos",
