@@ -21,7 +21,7 @@ function Navbar() {
 
             <nav className="menu">
 
-                <Link to="/">Início</Link>
+                <Link to={token ? "/admin" : "/"}>Início</Link>
 
                 <Link to="/sobre">Quem Sou Eu</Link>
 
