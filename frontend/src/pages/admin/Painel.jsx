@@ -1,22 +1,11 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link} from "react-router-dom"
 
 function Painel() {
-
-    const navigate = useNavigate()
-
-    function sair() {
-        sessionStorage.removeItem("token")
-        navigate("/login", { replace: true })
-    }
 
     return (
         <div className="painel">
 
             <section className="portfolio-apresentacao">
-
-                <button className="botao-sair" onClick={sair}>
-                    Sair
-                </button>
 
                 <h1>Seja Bem-vinda Júlia</h1>
 
@@ -39,6 +28,18 @@ function Painel() {
                         <Link to="/admin/areas" className="botao-home">
                             Cadastrar área
                         </Link>
+                    </div>
+
+                    <div className="card-area">
+
+                        <h3>Gerenciar áreas</h3>
+
+                        <p>Visualize, edite e exclua as áreas cadastradas.</p>
+
+                        <Link to="/admin/areas/gerenciar" className="botao-home">
+                            Gerenciar
+                        </Link>
+
                     </div>
 
                     <div className="card-area">

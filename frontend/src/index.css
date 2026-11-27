@@ -621,16 +621,6 @@ h1 {
     min-height: 230px;
 }
 
-.botao-sair {
-    display: block;
-    margin-left: auto;
-    background-color: var(--verde-escuro);
-    color: var(--branco);
-}
-
-.botao-sair:hover {
-    background-color: var(--verde-medio);
-}
 
 /* CADASTRO DE ÁREA*/
 
