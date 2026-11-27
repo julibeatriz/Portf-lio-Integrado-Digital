@@ -12,7 +12,6 @@ function EditarRegistro() {
     const [mensagem, setMensagem] = useState("")
 
     const secoes = [
-        "Quem Sou Eu",
         "Fundamentos Teóricos",
         "Participação em Sala de Aula",
         "Projetos e Trabalhos Desenvolvidos",
