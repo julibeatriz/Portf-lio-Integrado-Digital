@@ -1,4 +1,5 @@
 import { areaModel } from "../models/areaModel.js";
+import { registroModel } from "../models/registroModel.js";
 
 export const listarAreas = async(request, response)=>{
     try {
