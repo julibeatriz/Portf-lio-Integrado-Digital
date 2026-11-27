@@ -8,7 +8,6 @@ export const registroModel = conn.define(
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
-
         },
 
         id_area:{
@@ -26,22 +25,22 @@ export const registroModel = conn.define(
             allowNull: false,
             validate:{
                 isIn: {
-            args: [[
-                "Quem Sou Eu",
-                "Fundamentos Teóricos",
-                "Participação em Sala de Aula",
-                "Projetos e Trabalhos Desenvolvidos",
-                "Reflexão Crítica",
-                "Conexões Interdisciplinares",
-                "Aprendizados da Escola para a Vida"
-            ]],
-            msg: "Seção inválida"
-        }
-    }
+                    args: [[
+                        "Quem Sou Eu",
+                        "Fundamentos Teóricos",
+                        "Participação em Sala de Aula",
+                        "Projetos e Trabalhos Desenvolvidos",
+                        "Reflexão Crítica",
+                        "Conexões Interdisciplinares",
+                        "Aprendizados da Escola para a Vida"
+                    ]],
+                    msg: "Seção inválida"
+                }
+            }
         },
 
         bimestre:{
-            type: DataTypes.ENUM("1º Bimestre", "2º Bimestre", "3º Bimestre", "4º Bimestre"), 
+            type: DataTypes.ENUM("1º Bimestre", "2º Bimestre", "3º Bimestre", "4º Bimestre"),
             allowNull: true
         },
 
@@ -68,7 +67,7 @@ export const registroModel = conn.define(
         },
 
         aprendizado:{
-         type: DataTypes.TEXT,
+            type: DataTypes.TEXT,
             allowNull: true,
             validate:{
                 len: {
@@ -78,12 +77,27 @@ export const registroModel = conn.define(
             }
         },
 
+        reflexao_pratica:{
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+
+        autoavaliacao:{
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+
+        melhorias_necessarias:{
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+
         data_registro:{
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false
         },
-        
+
         evidencia_visual:{
             type: DataTypes.JSON,
             allowNull: true
