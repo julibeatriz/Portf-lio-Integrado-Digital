@@ -6,6 +6,7 @@
     --fundo: #F8FAF7;
     --texto: #24332B;
     --branco: #FFFFFF;
+    --titulo: #173D2B;
 }
 
 * {
@@ -51,6 +52,59 @@ ul {
 h1 {
     color: var(--titulo);
     font-weight: bold;
+}
+
+/* ESTILOS COMPARTILHADOS */
+
+.card-trajetoria,
+.card-area,
+.card-registro,
+.habilidades {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.trajetoria,
+.areas-conhecimento,
+.registros-academicos,
+.registro-conteudo,
+.painel-opcoes {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
+
+.card-formacao:hover,
+.card-area:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-login input:focus,
+.form-admin input:focus,
+.form-admin select:focus,
+.form-admin textarea:focus {
+    outline: 2px solid var(--verde-medio);
+}
+
+.form-login,
+.form-admin {
+    background-color: var(--branco);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.botao-home {
+    display: inline-block;
+    background-color: var(--verde-medio);
+    color: var(--branco);
+    padding: 12px 25px;
+    border-radius: 30px;
+    margin-top: 25px;
+}
+
+.botao-home:hover {
+    background-color: var(--verde-escuro);
 }
 
 /* NAVBAR */
@@ -154,10 +208,6 @@ h1 {
     line-height: 1.5;
 }
 
-.card-formacao:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
 /* QUEM SOU EU */
 .sobre-apresentacao {
     padding: 60px 10%;
@@ -211,11 +261,6 @@ h1 {
 
 /* MINHA TRAJETÓRIA ACADÊMICA */
 
-.trajetoria {
-    background-color: var(--verde-claro);
-    padding: 50px 10%;
-}
-
 .trajetoria h2 {
     color: var(--titulo);
     font-size: 36px;
@@ -232,9 +277,6 @@ h1 {
 .card-trajetoria {
     flex: 1;
     min-width: 250px;
-    background-color: var(--branco);
-    border-radius: 20px;
-    padding: 30px;
     display: flex;
     flex-direction: column;
 }
@@ -263,9 +305,6 @@ h1 {
 }
 
 .habilidades {
-    background-color: var(--branco);
-    border-radius: 20px;
-    padding: 30px;
     margin-top: 20px;
 }
 
@@ -306,11 +345,6 @@ h1 {
     line-height: 1.6;
 }
 
-.areas-conhecimento {
-    background-color: var(--verde-claro);
-    padding: 50px 10%;
-}
-
 .areas-conhecimento h2 {
     color: var(--titulo);
     text-align: center;
@@ -326,9 +360,6 @@ h1 {
 }
 
 .card-area {
-    background-color: var(--branco);
-    border-radius: 20px;
-    padding: 30px;
     width: 300px;
     max-width: 100%;
     text-align: center;
@@ -353,11 +384,6 @@ h1 {
     margin-top: auto;
     align-self: center;
 }
-
-.card-area:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
 
 /*ÁREAS */
 
@@ -387,11 +413,6 @@ h1 {
 }
 
 /* SEÇÕES E BIMESTRES */
-
-.registros-academicos {
-    background-color: var(--verde-claro);
-    padding: 50px 10%;
-}
 
 .registros-academicos h2 {
     color: var(--titulo);
@@ -426,12 +447,6 @@ h1 {
     gap: 20px;
 }
 
-.card-registro {
-    background-color: var(--branco);
-    border-radius: 20px;
-    padding: 30px;
-}
-
 .card-registro span {
     color: var(--verde-medio);
     font-size: 14px;
@@ -456,10 +471,6 @@ h1 {
 }
 
 /*REGISTROS */
-.registro-conteudo {
-    background-color: var(--verde-claro);
-    padding: 50px 10%;
-}
 
 .registro-detalhes {
     background-color: var(--branco);
@@ -514,7 +525,6 @@ h1 {
     margin: 0;
 }
 
-
 /*LOGIN */
 
 .login {
@@ -527,13 +537,9 @@ h1 {
 }
 
 .form-login {
-    background-color: var(--branco);
-    border-radius: 20px;
     padding: 40px;
     width: 420px;
     max-width: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 .form-login h1 {
@@ -563,10 +569,6 @@ h1 {
     border-radius: 10px;
     font-size: 16px;
     margin-bottom: 20px;
-}
-
-.form-login input:focus {
-    outline: 2px solid var(--verde-medio);
 }
 
 .mostrar-senha {
@@ -605,14 +607,8 @@ h1 {
 
 /*PAINEL ADMINITRATIVO */
 
-
 .painel .portfolio-apresentacao {
     position: relative;
-}
-
-.painel-opcoes {
-    background-color: var(--verde-claro);
-    padding: 50px 10%;
 }
 
 .painel .cards-areas {
@@ -644,14 +640,10 @@ h1 {
 }
 
 .form-admin {
-    background-color: var(--branco);
-    border-radius: 20px;
     padding: 35px;
     width: 600px;
     max-width: 90%;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
 }
 
 .form-admin label {
@@ -676,12 +668,6 @@ h1 {
 
 .form-admin textarea {
     resize: vertical;
-}
-
-.form-admin input:focus,
-.form-admin select:focus,
-.form-admin textarea:focus {
-    outline: 2px solid var(--verde-medio);
 }
 
 .form-admin button {

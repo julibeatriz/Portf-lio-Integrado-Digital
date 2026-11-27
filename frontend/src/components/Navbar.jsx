@@ -4,7 +4,13 @@ function Navbar() {
 
     useLocation()
 
+    const navigate = useNavigate()
     const token = sessionStorage.getItem("token")
+
+    function logout() {
+    sessionStorage.removeItem("token")
+    navigate("/login")
+    }
 
     return (
         <header className="navbar">
@@ -24,9 +30,9 @@ function Navbar() {
                 <Link to="/senai">SENAI</Link>
 
                 {token ? (
-                    <Link to="/admin" className="botao-login">
-                        Painel Administrativo
-                    </Link>
+                    <button className="botao-login" onClick={logout}>
+                        Logout
+                    </button>
                 ) : (
                     <Link to="/login" className="botao-login">
                         Login
