@@ -805,3 +805,73 @@ h1 {
 .arquivos-atuais a:hover {
     text-decoration: underline;
 }
+
+/*RESPONSIVIDADE */
+
+@media (max-width: 768px) {
+
+    .navbar,
+    .perfil,
+    .cards-formacao,
+    .cards-trajetoria,
+    .cards-areas,
+    .barra-gerenciamento {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .card-formacao,
+    .card-trajetoria,
+    .card-area,
+    .painel .card-area,
+    .form-admin,
+    .form-login,
+    .barra-gerenciamento input {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .apresentacao,
+    .portfolio-apresentacao,
+    .formacao,
+    .sobre,
+    .trajetoria,
+    .areas-conhecimento,
+    .registros-academicos,
+    .registro-conteudo,
+    .painel-opcoes {
+        padding: 30px 5%;
+    }
+
+    .apresentacao h1,
+    .portfolio-apresentacao h1,
+    .sobre-apresentacao h1 {
+        font-size: 28px;
+    }
+
+    .form-admin,
+    .form-login,
+    .registro-detalhes {
+        padding: 20px;
+    }
+
+    .acoes-registro,
+    .filtro-bimestres {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .perfil img,
+    .evidencia img {
+        max-width: 100%;
+        height: auto;
+    }
+  }
