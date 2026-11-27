@@ -42,9 +42,7 @@ function GerenciarAreas() {
     try {
         const response = await fetch(`${API_URL}/areas/${id}`, {
             method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: {Authorization: `Bearer ${token}`}
         })
 
         console.log("Status:", response.status)
