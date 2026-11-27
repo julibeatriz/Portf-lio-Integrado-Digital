@@ -26,6 +26,12 @@ function CadastroRegistro() {
         "Aprendizados da Escola para a Vida"
     ]
 
+    const secoesBimestrais = [
+        "Fundamentos Teóricos",
+        "Participação em Sala de Aula",
+        "Projetos e Trabalhos Desenvolvidos"
+    ]
+
     const bimestres = [
         "1º Bimestre",
         "2º Bimestre",
@@ -63,6 +69,8 @@ function CadastroRegistro() {
         secao === "Participação em Sala de Aula" ||
         secao === "Projetos e Trabalhos Desenvolvidos"
 
+    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+
     async function cadastrar(event) {
         event.preventDefault()
         setMensagem("")
@@ -82,7 +90,7 @@ function CadastroRegistro() {
         formData.append("titulo", titulo)
         formData.append("descricao", descricao)
 
-        if (instituicao === "Sesi") {
+        if (exigeBimestre) {
             formData.append("bimestre", bimestre)
         }
 
@@ -195,6 +203,7 @@ function CadastroRegistro() {
                     value={secao}
                     onChange={event => {
                         setSecao(event.target.value)
+                        setBimestre("")
                         setArquivos([])
                     }}
                     required
@@ -204,7 +213,7 @@ function CadastroRegistro() {
                     {secoes.map(item => ( <option key={item} value={item}>{item}</option>))}
                 </select>
 
-                {instituicao === "Sesi" && (
+                {exigeBimestre && (
                     <>
                         <label htmlFor="bimestre">Bimestre</label>
 

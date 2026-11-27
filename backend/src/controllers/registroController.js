@@ -9,6 +9,12 @@ const bimestresValidos = [
     "4º Bimestre"
 ]
 
+const secoesBimestrais = [
+    "Fundamentos Teóricos",
+    "Participação em Sala de Aula",
+    "Projetos e Trabalhos Desenvolvidos"
+]
+
 const secoesComEvidencias = [
     "Participação em Sala de Aula",
     "Projetos e Trabalhos Desenvolvidos"
@@ -18,7 +24,7 @@ export const listarRegistros = async(request, response)=>{
     try {
         const registro = await registroModel.findAll()
 
-      return response.status(200).json(registro)
+        return response.status(200).json(registro)
 
     } catch (error) {
         console.log(error)
@@ -55,7 +61,7 @@ export const cadastrarRegistro = async(request, response)=>{
             return response.status(404).json({message: "Área não encontrada"})
         }
 
-        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestre)){
+        if(area.instituicao === "Sesi" && secoesBimestrais.includes(secao) && !bimestresValidos.includes(bimestre)){
             await limparUpload(request)
 
             return response.status(400).json({
@@ -63,7 +69,7 @@ export const cadastrarRegistro = async(request, response)=>{
             })
         }
 
-        const bimestreFinal = area.instituicao === "Senai" ? null : bimestre
+        const bimestreFinal = area.instituicao === "Sesi" && secoesBimestrais.includes(secao) ? bimestre : null
 
         const registro = await registroModel.create({
             id_area,
@@ -168,7 +174,7 @@ export const atualizarRegistro = async(request, response)=>{
             })
         }
 
-        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestre)){
+        if(area.instituicao === "Sesi" && secoesBimestrais.includes(secao) && !bimestresValidos.includes(bimestre)){
             await limparUpload(request)
 
             return response.status(400).json({
@@ -179,7 +185,7 @@ export const atualizarRegistro = async(request, response)=>{
         await registro.update({
             id_area,
             secao,
-            bimestre: area.instituicao === "Senai" ? null : bimestre,
+            bimestre: area.instituicao === "Sesi" && secoesBimestrais.includes(secao) ? bimestre : null,
             titulo,
             descricao,
             aprendizado,
@@ -260,23 +266,25 @@ export const atualizarParteDoRegistro = async(request, response)=>{
         }
 
         const area = await areaModel.findByPk(id_area !== undefined ? id_area : registro.id_area)
-            if(!area){
-                await limparUpload(request)
-                return response.status(404).json({message: "Área não encontrada"})
-            }
+
+        if(!area){
+            await limparUpload(request)
+
+            return response.status(404).json({message: "Área não encontrada"})
+        }
 
         const bimestreFinal = bimestre !== undefined ? bimestre : registro.bimestre
 
-        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestreFinal)){
-                await limparUpload(request)
-                return response.status(400).json({message: "Selecione um bimestre válido"})
-            }
+        if(area.instituicao === "Sesi" && secoesBimestrais.includes(secaoFinal) && !bimestresValidos.includes(bimestreFinal)){
+            await limparUpload(request)
 
+            return response.status(400).json({message: "Selecione um bimestre válido"})
+        }
 
         await registro.update({
             id_area,
             secao,
-            bimestre: area.instituicao === "Senai" ? null : bimestreFinal,
+            bimestre: area.instituicao === "Sesi" && secoesBimestrais.includes(secaoFinal) ? bimestreFinal : null,
             titulo,
             descricao,
             aprendizado,
@@ -305,7 +313,6 @@ export const atualizarParteDoRegistro = async(request, response)=>{
         response.status(500).json({message: "Erro ao atualizar registro"})
     }
 }
-
 
 export const excluirRegistro = async(request, response)=>{
     try {

@@ -23,6 +23,12 @@ function EditarRegistro() {
         "Aprendizados da Escola para a Vida"
     ]
 
+    const secoesBimestrais = [
+        "Fundamentos Teóricos",
+        "Participação em Sala de Aula",
+        "Projetos e Trabalhos Desenvolvidos"
+    ]
+
     const bimestres = [
         "1º Bimestre",
         "2º Bimestre",
@@ -68,6 +74,8 @@ function EditarRegistro() {
 
     const instituicao = areaSelecionada?.instituicao
 
+    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+
     const permiteEvidencias =
         secao === "Participação em Sala de Aula" ||
         secao === "Projetos e Trabalhos Desenvolvidos"
@@ -79,7 +87,7 @@ function EditarRegistro() {
         const formData = new FormData(event.currentTarget)
         const token = sessionStorage.getItem("token")
 
-        if (instituicao === "Senai") {
+        if (!exigeBimestre) {
             formData.delete("bimestre")
         }
 
@@ -177,13 +185,19 @@ function EditarRegistro() {
                     id="secao"
                     name="secao"
                     value={secao}
-                    onChange={event => setSecao(event.target.value)}
+                    onChange={event => {
+                        setSecao(event.target.value)
+
+                        if (!secoesBimestrais.includes(event.target.value)) {
+                            setBimestre("")
+                        }
+                    }}
                     required
                 >
                     {secoes.map(item => ( <option key={item} value={item}> {item} </option> ))}
                 </select>
 
-                {instituicao === "Sesi" && (
+                {exigeBimestre && (
                     <>
                         <label htmlFor="bimestre">Bimestre</label>
 

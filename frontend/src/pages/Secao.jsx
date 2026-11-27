@@ -12,6 +12,12 @@ function Secao() {
     const [carregando, setCarregando] = useState(true)
     const [instituicao, setInstituicao] = useState("")
 
+    const secoesBimestrais = [
+        "Fundamentos Teóricos",
+        "Participação em Sala de Aula",
+        "Projetos e Trabalhos Desenvolvidos"
+    ]
+
     const bimestres = [
         "Todos",
         "1º Bimestre",
@@ -68,7 +74,9 @@ function Secao() {
 
     }, [id, secao])
 
-    const registrosFiltrados = registros.filter( registro => instituicao === "Senai" || bimestre === "Todos" || registro.bimestre === bimestre)
+    const exigeBimestre = instituicao === "Sesi" && secoesBimestrais.includes(secao)
+
+    const registrosFiltrados = registros.filter( registro => !exigeBimestre || bimestre === "Todos" || registro.bimestre === bimestre)
 
     return (
         <div className="secao">
@@ -92,7 +100,7 @@ function Secao() {
 
             <section className="registros-academicos">
 
-                {instituicao === "Sesi" && (
+                {exigeBimestre && (
                     <>
                         <h2>Selecione o bimestre</h2>
 
@@ -128,7 +136,7 @@ function Secao() {
                             key={registro.id_registro}
                         >
 
-                           {instituicao === "Sesi" && registro.bimestre && ( <span>{registro.bimestre}</span>)}
+                           {exigeBimestre && registro.bimestre && ( <span>{registro.bimestre}</span>)}
 
                             <h3>{registro.titulo}</h3>
 

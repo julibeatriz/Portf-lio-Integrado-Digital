@@ -105,7 +105,7 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve exibir os bimestres ao selecionar SESI", async () => {
+    test("Deve exibir os bimestres nas seções bimestrais do SESI", async () => {
 
         render(
             <MemoryRouter>
@@ -117,13 +117,77 @@ describe("Página CadastroRegistro", () => {
             target: { value: "Sesi" }
         })
 
-        expect(await screen.findByRole("option", {
-            name: "1º Bimestre"
-        })).toBeInTheDocument()
+        await screen.findByRole("option", {
+            name: "Matemática"
+        })
 
-        expect(screen.getByRole("option", {
-            name: "4º Bimestre"
-        })).toBeInTheDocument()
+        const secoes = [
+            "Fundamentos Teóricos",
+            "Participação em Sala de Aula",
+            "Projetos e Trabalhos Desenvolvidos"
+        ]
+
+        for (const secao of secoes) {
+
+            fireEvent.change(screen.getByLabelText(/seção/i), {
+                target: { value: secao }
+            })
+
+            expect(screen.getByLabelText(/bimestre/i))
+                .toBeInTheDocument()
+
+            expect(screen.getByRole("option", {
+                name: "1º Bimestre"
+            })).toBeInTheDocument()
+
+            expect(screen.getByRole("option", {
+                name: "2º Bimestre"
+            })).toBeInTheDocument()
+
+            expect(screen.getByRole("option", {
+                name: "3º Bimestre"
+            })).toBeInTheDocument()
+
+            expect(screen.getByRole("option", {
+                name: "4º Bimestre"
+            })).toBeInTheDocument()
+
+        }
+
+    })
+
+    test("Deve ocultar os bimestres nas seções anuais do SESI", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Sesi" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Matemática"
+        })
+
+        const secoes = [
+            "Reflexão Crítica",
+            "Conexões Interdisciplinares",
+            "Aprendizados da Escola para a Vida"
+        ]
+
+        for (const secao of secoes) {
+
+            fireEvent.change(screen.getByLabelText(/seção/i), {
+                target: { value: secao }
+            })
+
+            expect(screen.queryByLabelText(/bimestre/i))
+                .not.toBeInTheDocument()
+
+        }
 
     })
 
@@ -143,8 +207,55 @@ describe("Página CadastroRegistro", () => {
             name: "Programação Web"
         })).toBeInTheDocument()
 
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Fundamentos Teóricos" }
+        })
+
         expect(screen.queryByLabelText(/bimestre/i))
             .not.toBeInTheDocument()
+
+    })
+
+    test("Deve limpar o bimestre ao alterar para uma seção anual", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Sesi" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Matemática"
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Fundamentos Teóricos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/bimestre/i), {
+            target: { value: "1º Bimestre" }
+        })
+
+        expect(screen.getByLabelText(/bimestre/i))
+            .toHaveValue("1º Bimestre")
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Reflexão Crítica" }
+        })
+
+        expect(screen.queryByLabelText(/bimestre/i))
+            .not.toBeInTheDocument()
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Fundamentos Teóricos" }
+        })
+
+        expect(screen.getByLabelText(/bimestre/i))
+            .toHaveValue("")
 
     })
 
@@ -274,6 +385,81 @@ describe("Página CadastroRegistro", () => {
         const dados = fetch.mock.calls[1][1].body
 
         expect(dados.get("bimestre")).toBe("1º Bimestre")
+
+    })
+
+    test("Deve cadastrar um registro anual do SESI sem bimestre", async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async () => areas
+        }).mockResolvedValueOnce({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                id_registro: "registro_anual",
+                titulo: "Registro anual",
+                bimestre: null
+            })
+        })
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Sesi" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Matemática"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "1" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Reflexão Crítica" }
+        })
+
+        expect(screen.queryByLabelText(/bimestre/i))
+            .not.toBeInTheDocument()
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Registro anual" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição/i), {
+            target: { value: "Descrição do registro anual" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/aprendizado/i), {
+            target: { value: "Aprendizado adquirido durante o ano" }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByText(/sucesso/i))
+            .toBeInTheDocument()
+
+        expect(fetch).toHaveBeenCalledWith(
+            expect.stringContaining("/registros"),
+            expect.objectContaining({
+                method: "POST",
+                body: expect.any(FormData)
+            })
+        )
+
+        const dados = fetch.mock.calls[1][1].body
+
+        expect(dados.get("secao")).toBe("Reflexão Crítica")
+        expect(dados.has("bimestre")).toBe(false)
 
     })
 
@@ -458,6 +644,7 @@ describe("Página CadastroRegistro", () => {
 
             expect(screen.queryByLabelText(/evidências/i))
                 .not.toBeInTheDocument()
+
         }
 
     })

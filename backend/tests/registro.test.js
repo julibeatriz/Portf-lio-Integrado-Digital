@@ -9,6 +9,7 @@ let id_area
 let id_registro
 let id_area_senai
 let id_registro_senai
+let id_registro_anual
 
 beforeAll(async () => {
 
@@ -241,6 +242,26 @@ describe("POST /api/registros", () => {
 
     })
 
+    test("Deve cadastrar registro anual do SESI sem bimestre", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Reflexão Crítica",
+                titulo: "Registro anual",
+                descricao: "Descrição do registro anual"
+            })
+
+        id_registro_anual = response.body.id_registro
+
+        expect(response.status).toBe(201)
+        expect(id_registro_anual).toBeDefined()
+        expect(response.body.bimestre).toBeNull()
+
+    })
+
     test("Deve cadastrar evidência em seção permitida", async () => {
 
         const response = await request(app)
@@ -430,6 +451,45 @@ describe("PUT /api/registros/:id", () => {
 
     })
 
+    test("Deve atualizar registro anual sem bimestre", async () => {
+
+        expect(id_registro_anual).toBeDefined()
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Conexões Interdisciplinares",
+                titulo: "Registro anual atualizado",
+                descricao: "Descrição atualizada"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.bimestre).toBeNull()
+
+    })
+
+    test("Deve ignorar bimestre em seção anual", async () => {
+
+        expect(id_registro_anual).toBeDefined()
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Aprendizados da Escola para a Vida",
+                bimestre: "1º Bimestre",
+                titulo: "Registro anual atualizado",
+                descricao: "Descrição atualizada"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.bimestre).toBeNull()
+
+    })
+
     test("Deve retornar erro ao atualizar evidência em seção não permitida", async () => {
 
         const response = await request(app)
@@ -508,6 +568,56 @@ describe("PATCH /api/registros/:id", () => {
             })
 
         expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao alterar seção anual para bimestral sem bimestre", async () => {
+
+        expect(id_registro_anual).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                secao: "Fundamentos Teóricos"
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve alterar seção anual para bimestral", async () => {
+
+        expect(id_registro_anual).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                secao: "Fundamentos Teóricos",
+                bimestre: "1º Bimestre"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.secao).toBe("Fundamentos Teóricos")
+        expect(response.body.bimestre).toBe("1º Bimestre")
+
+    })
+
+    test("Deve alterar seção bimestral para anual", async () => {
+
+        expect(id_registro_anual).toBeDefined()
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro_anual}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                secao: "Reflexão Crítica"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.secao).toBe("Reflexão Crítica")
+        expect(response.body.bimestre).toBeNull()
 
     })
 
@@ -606,6 +716,16 @@ afterAll(async () => {
 
         const response = await request(app)
             .delete(`/api/registros/${id_registro_senai}`)
+            .set("Authorization", `Bearer ${token}`)
+
+        expect([200, 404]).toContain(response.status)
+
+    }
+
+    if(id_registro_anual && token){
+
+        const response = await request(app)
+            .delete(`/api/registros/${id_registro_anual}`)
             .set("Authorization", `Bearer ${token}`)
 
         expect([200, 404]).toContain(response.status)
