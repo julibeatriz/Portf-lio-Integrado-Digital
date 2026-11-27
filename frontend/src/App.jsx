@@ -6,6 +6,7 @@ import Footer from './components/Footer.jsx'
 import SobreMin from './pages/SobreMim.jsx'
 import Sesi from './pages/Sesi.jsx'
 import Senai from './pages/Senai.jsx'
+import Area from './pages/area.jsx'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/sobre" element={<SobreMin/>}/>
         <Route path="/sesi" element={<Sesi/>}/>
         <Route path="/senai" element={<Senai/>}/>
+        <Route path="/area/:id" element={<Area/>}/>
       </Routes> 
     </main>  
     

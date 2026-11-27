@@ -285,7 +285,110 @@ h1 {
 
 
 /* PÁGINA SENAI */
+/* PORTFÓLIOS SESI E SENAI */
 
+.portfolio-apresentacao {
+    text-align: center;
+    padding: 60px 10%;
+}
+
+.portfolio-apresentacao span {
+    color: var(--verde-medio);
+    font-size: 14px;
+    letter-spacing: 3px;
+}
+
+.portfolio-apresentacao h1 {
+    color: var(--titulo);
+    font-size: 42px;
+    margin: 20px 0;
+}
+
+.portfolio-apresentacao p {
+    color: var(--texto);
+    font-size: 20px;
+    line-height: 1.6;
+}
+
+.areas-conhecimento {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
+
+.areas-conhecimento h2 {
+    color: var(--titulo);
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.cards-areas {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.card-area {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+    width: 300px;
+    max-width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-area h3 {
+    color: var(--titulo);
+    font-size: 26px;
+    margin-bottom: 15px;
+}
+
+.card-area p {
+    color: var(--texto);
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.card-area .botao-home {
+    margin-top: auto;
+    align-self: center;
+}
+
+.card-area:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+/* PÁGINA DE ÁREAS */
+
+.area .portfolio-apresentacao {
+    position: relative;
+}
+
+.voltar {
+    display: block;
+    text-align: left;
+    color: var(--verde-medio);
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.voltar:hover {
+    color: var(--verde-escuro);
+    text-decoration: underline;
+}
+
+.area .card-area {
+    min-height: 180px;
+}
+
+.area .card-area h3 {
+    font-size: 24px;
+}
 
 /* REGISTROS */
 
