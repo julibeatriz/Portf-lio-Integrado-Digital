@@ -42,19 +42,21 @@ function Registro() {
         return <p>Carregando registro...</p>
     }
 
+    const permiteEvidencias =
+        registro.secao === "Participação em Sala de Aula" ||
+        registro.secao === "Projetos e Trabalhos Desenvolvidos"
+
     return (
         <div className="registro">
 
             <section className="portfolio-apresentacao">
 
-                <Link
-                    to={`/area/${registro.id_area}/secao/${encodeURIComponent(registro.secao)}`}
-                    className="voltar"
-                >
-                    ← Voltar aos registros
-                </Link>
+                <Link to={`/area/${registro.id_area}/secao/${encodeURIComponent(registro.secao)}`} className="voltar">  ← Voltar aos registros</Link>
 
-                <span> {registro.secao} {registro.bimestre && ` | ${registro.bimestre}`}</span>
+                <span>
+                    {registro.secao}
+                    {registro.bimestre && ` | ${registro.bimestre}`}
+                </span>
 
                 <h1>{registro.titulo}</h1>
 
@@ -70,47 +72,47 @@ function Registro() {
                     <hr />
 
                     <h2>Aprendizado adquirido</h2>
-                    <p>{registro.aprendizado || "Nenhum aprendizado registrado."}</p>
+                    <p> {registro.aprendizado || "Nenhum aprendizado registrado."} </p>
 
-                    <hr />
+                    {permiteEvidencias && (
+                        <>
+                            <hr />
 
-                    <h2>Evidências</h2>
+                            <h2>Evidências</h2>
 
-                    <div className="evidencias">
+                            <div className="evidencias">
 
-                        {(registro.evidencia_visual || []).map(arquivo => {
+                                {(registro.evidencia_visual || []).map(arquivo => {
 
-                            const url = `http://localhost:3333/public/${encodeURIComponent(arquivo)}`
-                            const nome = arquivo.toLowerCase()
+                                    const url = `http://localhost:3333/public/${encodeURIComponent(arquivo)}`
+                                    const nome = arquivo.toLowerCase()
 
-                            const imagem = nome.endsWith(".jpg") ||
-                                           nome.endsWith(".jpeg") ||
-                                           nome.endsWith(".png") ||
-                                           nome.endsWith(".webp")
+                                    const imagem = nome.endsWith(".jpg") ||
+                                                   nome.endsWith(".jpeg") ||
+                                                   nome.endsWith(".png") ||
+                                                   nome.endsWith(".webp")
 
-                            return (
-                                <div className="evidencia" key={arquivo}>
+                                    return (
+                                        <div className="evidencia" key={arquivo}>
 
-                                    <a href={url} target="_blank" rel="noopener noreferrer">
+                                            <a href={url} target="_blank" rel="noopener noreferrer">
 
-                                        {imagem ? (
-                                            <img src={url} alt="Evidência da atividade" />
-                                        ) : (
-                                            <span className="botao-home">
-                                                Acessar documento
-                                            </span>
-                                        )}
+                                                {imagem ? (
+                                                    <img src={url} alt="Evidência da atividade" />
+                                                ) : (
+                                                    <span className="botao-home"> Acessar documento </span>
+                                                )}
 
-                                    </a>
+                                            </a>
 
-                                </div>
-                            )
-                        })}
+                                        </div>
+                                    )
+                                })}
 
-                    </div>
+                            </div>
 
-                    {!registro.evidencia_visual?.length && (
-                        <p>Nenhuma evidência cadastrada.</p>
+                            {!registro.evidencia_visual?.length && ( <p>Nenhuma evidência cadastrada.</p> )}
+                        </>
                     )}
 
                 </div>
@@ -121,4 +123,4 @@ function Registro() {
     )
 }
 
-export default Registro;
+export default Registro

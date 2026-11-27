@@ -33,20 +33,19 @@ function CadastroRegistro() {
         "4º Bimestre"
     ]
 
-
     useEffect(() => {
 
         async function buscarAreas() {
             try {
-                const response = await fetch(`${API_URL}/areas`);
+                const response = await fetch(`${API_URL}/areas`)
 
                 if (!response.ok) {
-                    setMensagem("Erro ao buscar áreas.");
+                    setMensagem("Erro ao buscar áreas.")
                     return
                 }
 
-                const dados = await response.json();
-                setAreas(dados);
+                const dados = await response.json()
+                setAreas(dados)
 
             } catch (error) {
                 console.log(error)
@@ -58,15 +57,18 @@ function CadastroRegistro() {
 
     }, [])
 
-
     const areasFiltradas = areas.filter(area => area.instituicao === instituicao)
+
+    const permiteEvidencias =
+        secao === "Participação em Sala de Aula" ||
+        secao === "Projetos e Trabalhos Desenvolvidos"
 
     async function cadastrar(event) {
         event.preventDefault()
         setMensagem("")
 
         const formulario = event.currentTarget
-        const token = sessionStorage.getItem("token");
+        const token = sessionStorage.getItem("token")
 
         if (arquivos.length > 10) {
             setMensagem("Selecione no máximo 10 arquivos.")
@@ -75,10 +77,10 @@ function CadastroRegistro() {
 
         const formData = new FormData()
 
-        formData.append("id_area", idArea);
-        formData.append("secao", secao);
-        formData.append("titulo", titulo);
-        formData.append("descricao", descricao);
+        formData.append("id_area", idArea)
+        formData.append("secao", secao)
+        formData.append("titulo", titulo)
+        formData.append("descricao", descricao)
 
         if (instituicao === "Sesi") {
             formData.append("bimestre", bimestre)
@@ -88,20 +90,23 @@ function CadastroRegistro() {
             formData.append("aprendizado", aprendizado)
         }
 
-        for (const arquivo of arquivos) {
+        if (permiteEvidencias) {
 
-            if (arquivo.size > 20 * 1024 * 1024) {
-                setMensagem("Cada arquivo deve ter no máximo 20 MB.")
-                return
+            for (const arquivo of arquivos) {
+
+                if (arquivo.size > 20 * 1024 * 1024) {
+                    setMensagem("Cada arquivo deve ter no máximo 20 MB.")
+                    return
+                }
+
+                formData.append("evidencia_visual", arquivo)
             }
-
-            formData.append("evidencia_visual", arquivo)
         }
 
         try {
-            const response = await fetch(`${API_URL}/registros` , {
+            const response = await fetch(`${API_URL}/registros`, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${token}`},
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData
             })
 
@@ -142,13 +147,11 @@ function CadastroRegistro() {
 
             <section className="portfolio-apresentacao">
 
-                <Link to="/admin" className="voltar">
-                    ← Voltar ao painel
-                </Link>
+                <Link to="/admin" className="voltar"> ← Voltar ao painel </Link>
 
                 <h1>Cadastrar registro</h1>
 
-                <p> Adicione um novo conteúdo ao seu portfólio.</p>
+                <p>Adicione um novo conteúdo ao seu portfólio.</p>
 
             </section>
 
@@ -182,9 +185,7 @@ function CadastroRegistro() {
                 >
                     <option value="">Selecione a área</option>
 
-                    {areasFiltradas.map(area => (
-                        <option key={area.id_area} value={area.id_area}> {area.nome} </option>
-                    ))}
+                    {areasFiltradas.map(area => ( <option key={area.id_area} value={area.id_area}>{area.nome}</option> ))}
                 </select>
 
                 <label htmlFor="secao">Seção</label>
@@ -192,34 +193,31 @@ function CadastroRegistro() {
                 <select
                     id="secao"
                     value={secao}
-                    onChange={event => setSecao(event.target.value)}
+                    onChange={event => {
+                        setSecao(event.target.value)
+                        setArquivos([])
+                    }}
                     required
                 >
                     <option value="">Selecione a seção</option>
 
-                    {secoes.map(item => (
-                        <option key={item} value={item}> {item} </option>
-                    ))}
+                    {secoes.map(item => ( <option key={item} value={item}>{item}</option>))}
                 </select>
 
                 {instituicao === "Sesi" && (
-    <>
-                <label htmlFor="bimestre">Bimestre</label>
+                    <>
+                        <label htmlFor="bimestre">Bimestre</label>
 
-                <select
-                    id="bimestre"
-                    value={bimestre}
-                    onChange={event => setBimestre(event.target.value)}
-                    required
-                >
-                    <option value="">Selecione o bimestre</option>
+                        <select
+                            id="bimestre"
+                            value={bimestre}
+                            onChange={event => setBimestre(event.target.value)}
+                            required
+                        >
+                            <option value="">Selecione o bimestre</option>
 
-                    {bimestres.map(item => (
-                        <option key={item} value={item}>
-                            {item}
-                        </option>
-                    ))}
-                </select>
+                            {bimestres.map(item => ( <option key={item} value={item}> {item}</option>))}
+                        </select>
                     </>
                 )}
 
@@ -236,7 +234,7 @@ function CadastroRegistro() {
                     required
                 />
 
-                <label htmlFor="descricao"> Descrição da atividade</label>
+                <label htmlFor="descricao">Descrição da atividade</label>
 
                 <textarea
                     id="descricao"
@@ -249,7 +247,7 @@ function CadastroRegistro() {
                     required
                 />
 
-                <label htmlFor="aprendizado"> Aprendizado adquirido</label>
+                <label htmlFor="aprendizado">Aprendizado adquirido</label>
 
                 <textarea
                     id="aprendizado"
@@ -261,23 +259,28 @@ function CadastroRegistro() {
                     maxLength={1200}
                 />
 
-                <label htmlFor="evidencias">Evidências</label>
+                {permiteEvidencias && (
+                    <>
+                        <label htmlFor="evidencias">Evidências</label>
 
-                <input
-                    id="evidencias"
-                    type="file"
-                    multiple
-                    accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
-                    onChange={event => setArquivos(
-                        Array.from(event.target.files)
-                    )}
-                />
+                        <input
+                            key={secao}
+                            id="evidencias"
+                            type="file"
+                            multiple
+                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
+                            onChange={event => setArquivos( Array.from(event.target.files))}
+                        />
 
-                <p className="aviso-arquivos"> Máximo de 10 arquivos de até 20 MB cada.</p>
+                        <p className="aviso-arquivos">Máximo de 10 arquivos de até 20 MB cada.</p>
+                    </>
+                )}
 
-                {mensagem && ( <p className="mensagem-admin" role="status">{mensagem}</p>)}
+                {mensagem && (
+                    <p className="mensagem-admin" role="status">{mensagem}</p>
+                )}
 
-                <button type="submit"> Cadastrar registro</button>
+                <button type="submit">Cadastrar registro</button>
 
             </form>
 

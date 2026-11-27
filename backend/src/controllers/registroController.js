@@ -9,6 +9,11 @@ const bimestresValidos = [
     "4º Bimestre"
 ]
 
+const secoesComEvidencias = [
+    "Participação em Sala de Aula",
+    "Projetos e Trabalhos Desenvolvidos"
+]
+
 export const listarRegistros = async(request, response)=>{
     try {
         const registro = await registroModel.findAll()
@@ -34,6 +39,12 @@ export const cadastrarRegistro = async(request, response)=>{
             await limparUpload(request)
 
             return response.status(400).json({message: "Preencha todos os campos obrigatórios"})
+        }
+
+        if(!secoesComEvidencias.includes(secao) && evidencia_visual.length > 0){
+            await limparUpload(request)
+
+            return response.status(400).json({message: "Esta seção não permite evidências"})
         }
 
         const area = await areaModel.findByPk(id_area)
@@ -141,6 +152,12 @@ export const atualizarRegistro = async(request, response)=>{
             return response.status(400).json({message: "Preencha todos os campos obrigatórios"})
         }
 
+        if(!secoesComEvidencias.includes(secao) && evidencia_visual?.length > 0){
+            await limparUpload(request)
+
+            return response.status(400).json({message: "Esta seção não permite evidências"})
+        }
+
         const area = await areaModel.findByPk(id_area)
 
         if(!area){
@@ -150,7 +167,7 @@ export const atualizarRegistro = async(request, response)=>{
                 message: "Área não encontrada"
             })
         }
-        
+
         if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestre)){
             await limparUpload(request)
 
@@ -232,6 +249,14 @@ export const atualizarParteDoRegistro = async(request, response)=>{
 
                 return response.status(400).json({message: "Descrição inválida"})
             }
+        }
+
+        const secaoFinal = secao !== undefined ? secao : registro.secao
+
+        if(!secoesComEvidencias.includes(secaoFinal) && evidencia_visual?.length > 0){
+            await limparUpload(request)
+
+            return response.status(400).json({message: "Esta seção não permite evidências"})
         }
 
         const area = await areaModel.findByPk(id_area !== undefined ? id_area : registro.id_area)

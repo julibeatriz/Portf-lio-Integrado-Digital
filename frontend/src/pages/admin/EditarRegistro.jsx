@@ -12,6 +12,7 @@ function EditarRegistro() {
     const [mensagem, setMensagem] = useState("")
     const [idArea, setIdArea] = useState("")
     const [bimestre, setBimestre] = useState("")
+    const [secao, setSecao] = useState("")
 
     const secoes = [
         "Fundamentos Teóricos",
@@ -49,6 +50,7 @@ function EditarRegistro() {
                 setAreas(dadosAreas)
                 setIdArea(String(dadosRegistro.id_area))
                 setBimestre(dadosRegistro.bimestre || "")
+                setSecao(dadosRegistro.secao)
 
             } catch (error) {
                 console.log(error)
@@ -60,11 +62,19 @@ function EditarRegistro() {
 
     }, [id])
 
-    const areaSelecionada = areas.find( area => String(area.id_area) === idArea)
+    const areaSelecionada = areas.find(
+        area => String(area.id_area) === idArea
+    )
+
     const instituicao = areaSelecionada?.instituicao
+
+    const permiteEvidencias =
+        secao === "Participação em Sala de Aula" ||
+        secao === "Projetos e Trabalhos Desenvolvidos"
 
     async function atualizar(event) {
         event.preventDefault()
+        setMensagem("")
 
         const formData = new FormData(event.currentTarget)
         const token = sessionStorage.getItem("token")
@@ -77,13 +87,22 @@ function EditarRegistro() {
             formData.delete("aprendizado")
         }
 
+        if (!permiteEvidencias) {
+
+            if (registro.evidencia_visual?.length) {
+                setMensagem("Não é possível alterar para uma seção que não permite evidências enquanto houver arquivos cadastrados.")
+                return
+            }
+
+            formData.delete("evidencia_visual")
+        }
+
         try {
             const response = await fetch(`${API_URL}/registros/${id}`, {
-                    method: "PUT",
-                    headers: {Authorization: `Bearer ${token}`},
-                    body: formData
-                }
-            )
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            })
 
             if (response.status === 401) {
                 sessionStorage.removeItem("token")
@@ -114,7 +133,7 @@ function EditarRegistro() {
 
             <section className="portfolio-apresentacao">
 
-                <Link to="/admin/registros" className="voltar"> ← Voltar ao gerenciamento</Link>
+                <Link to="/admin/registros" className="voltar">← Voltar ao gerenciamento </Link>
 
                 <h1>Editar registro</h1>
 
@@ -122,7 +141,11 @@ function EditarRegistro() {
 
             </section>
 
-            <form key={registro.id_registro} className="form-admin" onSubmit={atualizar}>
+            <form
+                key={registro.id_registro}
+                className="form-admin"
+                onSubmit={atualizar}
+            >
 
                 <label htmlFor="area">Área de conhecimento</label>
 
@@ -143,7 +166,9 @@ function EditarRegistro() {
                     }}
                     required
                 >
-                    {areas.map(area => ( <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option> ))}
+                    {areas.map(area => (
+                        <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option>
+                    ))}
                 </select>
 
                 <label htmlFor="secao">Seção</label>
@@ -151,14 +176,15 @@ function EditarRegistro() {
                 <select
                     id="secao"
                     name="secao"
-                    defaultValue={registro.secao}
+                    value={secao}
+                    onChange={event => setSecao(event.target.value)}
                     required
                 >
-                    {secoes.map(item => ( <option key={item} value={item}> {item} </option>))}
+                    {secoes.map(item => ( <option key={item} value={item}> {item} </option> ))}
                 </select>
 
                 {instituicao === "Sesi" && (
-    <>
+                    <>
                         <label htmlFor="bimestre">Bimestre</label>
 
                         <select
@@ -170,7 +196,7 @@ function EditarRegistro() {
                         >
                             <option value="">Selecione o bimestre</option>
 
-                            {bimestres.map(item => ( <option key={item} value={item}> {item} </option>))}
+                            {bimestres.map(item => ( <option key={item} value={item}> {item}</option>))}
                         </select>
                     </>
                 )}
@@ -210,35 +236,45 @@ function EditarRegistro() {
                     maxLength={1200}
                 />
 
-                <label>Evidências atuais</label>
+                {permiteEvidencias && (
+                    <>
+                        <label>Evidências atuais</label>
 
-                <div className="arquivos-atuais">
+                        <div className="arquivos-atuais">
 
-                    {(registro.evidencia_visual || []).map(arquivo => (
-                        <a key={arquivo} href={`http://localhost:3333/public/${encodeURIComponent(arquivo)}`} target="_blank" rel="noopener noreferrer"> {arquivo} </a>
-                    ))}
+                            {(registro.evidencia_visual || []).map(arquivo => (
+                                <a
+                                    key={arquivo}
+                                    href={`http://localhost:3333/public/${encodeURIComponent(arquivo)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {arquivo}
+                                </a>
+                            ))}
 
-                    {!registro.evidencia_visual?.length && (
-                        <p>Nenhuma evidência cadastrada.</p>
-                    )}
+                            {!registro.evidencia_visual?.length && ( <p>Nenhuma evidência cadastrada.</p> )}
 
-                </div>
+                        </div>
 
-                <label htmlFor="evidencias">Novas evidências</label>
+                        <label htmlFor="evidencias">Novas evidências</label>
 
-                <input
-                    id="evidencias"
-                    type="file"
-                    name="evidencia_visual"
-                    accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
-                    multiple
-                />
+                        <input
+                            key={secao}
+                            id="evidencias"
+                            type="file"
+                            name="evidencia_visual"
+                            accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.pptx,.xlsx"
+                            multiple
+                        />
 
-                <p className="aviso-arquivos"> Os novos arquivos substituirão as evidências atuais. Deixe vazio para manter os arquivos existentes. </p>
+                        <p className="aviso-arquivos"> Os novos arquivos substituirão as evidências atuais. Deixe vazio para manter os arquivos existentes. </p>
+                    </>
+                )}
 
-                {mensagem && ( <p className="mensagem-admin" role="status"> {mensagem}</p>)}
+                {mensagem && (<p className="mensagem-admin" role="status">{mensagem}</p>)}
 
-                <button type="submit"> Salvar alterações </button>
+                <button type="submit">Salvar alterações</button>
 
             </form>
 
@@ -246,4 +282,4 @@ function EditarRegistro() {
     )
 }
 
-export default EditarRegistro;
+export default EditarRegistro

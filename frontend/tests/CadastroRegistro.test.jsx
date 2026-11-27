@@ -401,4 +401,65 @@ describe("Página CadastroRegistro", () => {
 
     })
 
+    test("Deve exibir evidências em Participação em Sala de Aula", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Participação em Sala de Aula" }
+        })
+
+        expect(await screen.findByLabelText(/evidências/i))
+            .toBeInTheDocument()
+
+    })
+
+    test("Deve exibir evidências em Projetos e Trabalhos Desenvolvidos", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Projetos e Trabalhos Desenvolvidos" }
+        })
+
+        expect(await screen.findByLabelText(/evidências/i))
+            .toBeInTheDocument()
+
+    })
+
+    test("Deve ocultar evidências nas demais seções", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        const secoes = [
+            "Fundamentos Teóricos",
+            "Reflexão Crítica",
+            "Conexões Interdisciplinares",
+            "Aprendizados da Escola para a Vida"
+        ]
+
+        for (const secao of secoes) {
+
+            fireEvent.change(screen.getByLabelText(/seção/i), {
+                target: { value: secao }
+            })
+
+            expect(screen.queryByLabelText(/evidências/i))
+                .not.toBeInTheDocument()
+        }
+
+    })
+
 })

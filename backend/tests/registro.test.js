@@ -241,6 +241,60 @@ describe("POST /api/registros", () => {
 
     })
 
+    test("Deve cadastrar evidência em seção permitida", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Participação em Sala de Aula")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Registro com evidência")
+            .field("descricao", "Descrição da atividade")
+            .attach("evidencia_visual", Buffer.from("Arquivo de teste"), "teste.pdf")
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(201)
+        expect(response.body.evidencia_visual).toHaveLength(1)
+
+    })
+
+    test("Deve retornar erro ao cadastrar evidência em seção não permitida", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Fundamentos Teóricos")
+            .field("bimestre", "1º Bimestre")
+            .field("titulo", "Registro de teste")
+            .field("descricao", "Descrição da atividade")
+            .attach("evidencia_visual", Buffer.from("Arquivo de teste"), "teste.pdf")
+
+        if(response.body.id_registro){
+
+            const exclusao = await request(app)
+                .delete(`/api/registros/${response.body.id_registro}`)
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(exclusao.status).toBe(200)
+
+        }
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe("Esta seção não permite evidências")
+
+    })
+
 })
 
 describe("GET /api/registros/:id", () => {
@@ -376,6 +430,23 @@ describe("PUT /api/registros/:id", () => {
 
     })
 
+    test("Deve retornar erro ao atualizar evidência em seção não permitida", async () => {
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro}`)
+            .set("Authorization", `Bearer ${token}`)
+            .field("id_area", id_area)
+            .field("secao", "Fundamentos Teóricos")
+            .field("bimestre", "2º Bimestre")
+            .field("titulo", "Registro atualizado")
+            .field("descricao", "Descrição atualizada")
+            .attach("evidencia_visual", Buffer.from("Arquivo de teste"), "teste.pdf")
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe("Esta seção não permite evidências")
+
+    })
+
 })
 
 describe("PATCH /api/registros/:id", () => {
@@ -437,6 +508,18 @@ describe("PATCH /api/registros/:id", () => {
             })
 
         expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao adicionar evidência em seção não permitida", async () => {
+
+        const response = await request(app)
+            .patch(`/api/registros/${id_registro}`)
+            .set("Authorization", `Bearer ${token}`)
+            .attach("evidencia_visual", Buffer.from("Arquivo de teste"), "teste.pdf")
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe("Esta seção não permite evidências")
 
     })
 
