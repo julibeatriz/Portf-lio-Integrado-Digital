@@ -82,6 +82,19 @@ export const editarArea = async (request, response)=>{
             })
         }
 
+        if (instituicao !== area.instituicao) {
+
+            const registro = await registroModel.findOne({
+                where: { id_area: id }
+            })
+
+            if (registro) {
+                return response.status(409).json({
+                    message: "A área possui registros vinculados"
+                })
+            }
+        }
+
         await area.update({
             instituicao,
             nome,
@@ -92,7 +105,9 @@ export const editarArea = async (request, response)=>{
 
     } catch (error) {
         console.log(error)
-         return response.status(500).json({message: "Erro ao buscar área"})
+        return response.status(500).json({
+            message: "Erro ao editar área"
+        })
     }
 }
 

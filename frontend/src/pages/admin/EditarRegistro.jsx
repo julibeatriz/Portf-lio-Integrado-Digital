@@ -10,6 +10,8 @@ function EditarRegistro() {
     const [registro, setRegistro] = useState(null)
     const [areas, setAreas] = useState([])
     const [mensagem, setMensagem] = useState("")
+    const [idArea, setIdArea] = useState("")
+    const [bimestre, setBimestre] = useState("")
 
     const secoes = [
         "Fundamentos Teóricos",
@@ -45,6 +47,8 @@ function EditarRegistro() {
 
                 setRegistro(dadosRegistro)
                 setAreas(dadosAreas)
+                setIdArea(String(dadosRegistro.id_area))
+                setBimestre(dadosRegistro.bimestre || "")
 
             } catch (error) {
                 console.log(error)
@@ -56,11 +60,18 @@ function EditarRegistro() {
 
     }, [id])
 
+    const areaSelecionada = areas.find( area => String(area.id_area) === idArea)
+    const instituicao = areaSelecionada?.instituicao
+
     async function atualizar(event) {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
         const token = sessionStorage.getItem("token")
+
+        if (instituicao === "Senai") {
+            formData.delete("bimestre")
+        }
 
         if (!formData.get("aprendizado").trim()) {
             formData.delete("aprendizado")
@@ -118,12 +129,21 @@ function EditarRegistro() {
                 <select
                     id="area"
                     name="id_area"
-                    defaultValue={registro.id_area}
+                    value={idArea}
+                    onChange={event => {
+                        setIdArea(event.target.value)
+
+                        const novaArea = areas.find(
+                            area => String(area.id_area) === event.target.value
+                        )
+
+                        if (novaArea?.instituicao === "Senai") {
+                            setBimestre("")
+                        }
+                    }}
                     required
                 >
-                    {areas.map(area => (
-                        <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option>
-                    ))}
+                    {areas.map(area => ( <option key={area.id_area} value={area.id_area}> {area.instituicao} - {area.nome} </option> ))}
                 </select>
 
                 <label htmlFor="secao">Seção</label>
@@ -137,19 +157,23 @@ function EditarRegistro() {
                     {secoes.map(item => ( <option key={item} value={item}> {item} </option>))}
                 </select>
 
-                <label htmlFor="bimestre">Bimestre</label>
+                {instituicao === "Sesi" && (
+    <>
+                        <label htmlFor="bimestre">Bimestre</label>
 
-                <select
-                    id="bimestre"
-                    name="bimestre"
-                    defaultValue={registro.bimestre || ""}
-                    required
-                >
-                    <option value="">Selecione o bimestre</option>
+                        <select
+                            id="bimestre"
+                            name="bimestre"
+                            value={bimestre}
+                            onChange={event => setBimestre(event.target.value)}
+                            required
+                        >
+                            <option value="">Selecione o bimestre</option>
 
-                    {bimestres.map(item => ( <option key={item} value={item}> {item} </option>
-                    ))}
-                </select>
+                            {bimestres.map(item => ( <option key={item} value={item}> {item} </option>))}
+                        </select>
+                    </>
+                )}
 
                 <label htmlFor="titulo">Título</label>
 

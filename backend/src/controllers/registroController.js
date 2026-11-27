@@ -2,6 +2,13 @@ import { registroModel } from "../models/registroModel.js";
 import { areaModel } from "../models/areaModel.js";
 import { excluirImagens, limparUpload } from "../utils/excluirImagens.js"
 
+const bimestresValidos = [
+    "1º Bimestre",
+    "2º Bimestre",
+    "3º Bimestre",
+    "4º Bimestre"
+]
+
 export const listarRegistros = async(request, response)=>{
     try {
         const registro = await registroModel.findAll()
@@ -37,11 +44,21 @@ export const cadastrarRegistro = async(request, response)=>{
             return response.status(404).json({message: "Área não encontrada"})
         }
 
+        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestre)){
+            await limparUpload(request)
+
+            return response.status(400).json({
+                message: "Selecione um bimestre válido para o SESI"
+            })
+        }
+
+        const bimestreFinal = area.instituicao === "Senai" ? null : bimestre
+
         const registro = await registroModel.create({
             id_area,
             id_usuario,
             secao,
-            bimestre,
+            bimestre: bimestreFinal,
             titulo,
             descricao,
             aprendizado,
@@ -133,11 +150,19 @@ export const atualizarRegistro = async(request, response)=>{
                 message: "Área não encontrada"
             })
         }
+        
+        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestre)){
+            await limparUpload(request)
+
+            return response.status(400).json({
+                message: "Selecione um bimestre válido"
+            })
+        }
 
         await registro.update({
             id_area,
             secao,
-            bimestre,
+            bimestre: area.instituicao === "Senai" ? null : bimestre,
             titulo,
             descricao,
             aprendizado,
@@ -209,20 +234,24 @@ export const atualizarParteDoRegistro = async(request, response)=>{
             }
         }
 
-        if(id_area !== undefined){
-            const area = await areaModel.findByPk(id_area)
-
+        const area = await areaModel.findByPk(id_area !== undefined ? id_area : registro.id_area)
             if(!area){
                 await limparUpload(request)
-
                 return response.status(404).json({message: "Área não encontrada"})
             }
-        }
+
+        const bimestreFinal = bimestre !== undefined ? bimestre : registro.bimestre
+
+        if(area.instituicao === "Sesi" && !bimestresValidos.includes(bimestreFinal)){
+                await limparUpload(request)
+                return response.status(400).json({message: "Selecione um bimestre válido"})
+            }
+
 
         await registro.update({
             id_area,
             secao,
-            bimestre,
+            bimestre: area.instituicao === "Senai" ? null : bimestreFinal,
             titulo,
             descricao,
             aprendizado,

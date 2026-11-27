@@ -77,9 +77,12 @@ function CadastroRegistro() {
 
         formData.append("id_area", idArea);
         formData.append("secao", secao);
-        formData.append("bimestre", bimestre);
         formData.append("titulo", titulo);
         formData.append("descricao", descricao);
+
+        if (instituicao === "Sesi") {
+            formData.append("bimestre", bimestre)
+        }
 
         if (aprendizado.trim()) {
             formData.append("aprendizado", aprendizado)
@@ -159,6 +162,7 @@ function CadastroRegistro() {
                     onChange={event => {
                         setInstituicao(event.target.value)
                         setIdArea("")
+                        setBimestre("")
                     }}
                     required
                 >
@@ -198,6 +202,8 @@ function CadastroRegistro() {
                     ))}
                 </select>
 
+                {instituicao === "Sesi" && (
+    <>
                 <label htmlFor="bimestre">Bimestre</label>
 
                 <select
@@ -209,9 +215,13 @@ function CadastroRegistro() {
                     <option value="">Selecione o bimestre</option>
 
                     {bimestres.map(item => (
-                        <option key={item} value={item}> {item} </option>
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
                     ))}
                 </select>
+                    </>
+                )}
 
                 <label htmlFor="titulo">Título</label>
 

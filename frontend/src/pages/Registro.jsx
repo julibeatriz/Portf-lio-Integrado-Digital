@@ -54,7 +54,7 @@ function Registro() {
                     ← Voltar aos registros
                 </Link>
 
-                <span>{registro.secao} | {registro.bimestre}</span>
+                <span> {registro.secao} {registro.bimestre && ` | ${registro.bimestre}`}</span>
 
                 <h1>{registro.titulo}</h1>
 

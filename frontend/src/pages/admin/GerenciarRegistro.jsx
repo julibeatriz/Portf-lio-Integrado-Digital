@@ -115,7 +115,7 @@ function GerenciarRegistros() {
 
                         <div className="card-registro" key={registro.id_registro} >
 
-                            <span> {registro.bimestre} | {registro.secao} </span>
+                            <span> {registro.bimestre && `${registro.bimestre} | `} {registro.secao}</span>
 
                             <h3>{registro.titulo}</h3>
 

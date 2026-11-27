@@ -105,13 +105,17 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve exibir os bimestres", async () => {
+    test("Deve exibir os bimestres ao selecionar SESI", async () => {
 
         render(
             <MemoryRouter>
                 <CadastroRegistro />
             </MemoryRouter>
         )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Sesi" }
+        })
 
         expect(await screen.findByRole("option", {
             name: "1º Bimestre"
@@ -120,6 +124,27 @@ describe("Página CadastroRegistro", () => {
         expect(screen.getByRole("option", {
             name: "4º Bimestre"
         })).toBeInTheDocument()
+
+    })
+
+    test("Deve ocultar os bimestres ao selecionar SENAI", async () => {
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        expect(await screen.findByRole("option", {
+            name: "Programação Web"
+        })).toBeInTheDocument()
+
+        expect(screen.queryByLabelText(/bimestre/i))
+            .not.toBeInTheDocument()
 
     })
 
@@ -178,7 +203,7 @@ describe("Página CadastroRegistro", () => {
 
     })
 
-    test("Deve cadastrar um registro com sucesso", async () => {
+    test("Deve cadastrar um registro do SESI com sucesso", async () => {
 
         fetch.mockResolvedValueOnce({
             ok: true,
@@ -245,6 +270,73 @@ describe("Página CadastroRegistro", () => {
                 body: expect.any(FormData)
             })
         )
+
+        const dados = fetch.mock.calls[1][1].body
+
+        expect(dados.get("bimestre")).toBe("1º Bimestre")
+
+    })
+
+    test("Deve cadastrar um registro do SENAI sem bimestre", async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async () => areas
+        }).mockResolvedValueOnce({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                id_registro: "registro_senai",
+                titulo: "Registro SENAI",
+                bimestre: null
+            })
+        })
+
+        render(
+            <MemoryRouter>
+                <CadastroRegistro />
+            </MemoryRouter>
+        )
+
+        fireEvent.change(screen.getByLabelText(/instituição/i), {
+            target: { value: "Senai" }
+        })
+
+        await screen.findByRole("option", {
+            name: "Programação Web"
+        })
+
+        fireEvent.change(screen.getByLabelText(/área/i), {
+            target: { value: "2" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/seção/i), {
+            target: { value: "Fundamentos Teóricos" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/título/i), {
+            target: { value: "Registro SENAI" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/descrição/i), {
+            target: { value: "Descrição da atividade do SENAI" }
+        })
+
+        fireEvent.change(screen.getByLabelText(/aprendizado/i), {
+            target: { value: "Aprendizado adquirido durante a atividade" }
+        })
+
+        fireEvent.click(
+            screen.getByRole("button", { name: /cadastrar/i })
+        )
+
+        expect(await screen.findByText(/sucesso/i))
+            .toBeInTheDocument()
+
+        const dados = fetch.mock.calls[1][1].body
+
+        expect(dados.has("bimestre")).toBe(false)
 
     })
 

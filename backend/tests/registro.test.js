@@ -7,6 +7,8 @@ import app from "../src/app.js"
 let token
 let id_area
 let id_registro
+let id_area_senai
+let id_registro_senai
 
 beforeAll(async () => {
 
@@ -34,6 +36,20 @@ beforeAll(async () => {
 
     expect(area.status).toBe(201)
     expect(id_area).toBeDefined()
+
+    const areaSenai = await request(app)
+        .post("/api/areas")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            instituicao: "Senai",
+            nome: "Área SENAI de teste",
+            descricao: "Área criada durante os testes"
+        })
+
+    id_area_senai = areaSenai.body.id_area
+
+    expect(areaSenai.status).toBe(201)
+    expect(id_area_senai).toBeDefined()
 
 })
 
@@ -71,6 +87,7 @@ describe("POST /api/registros", () => {
 
         expect(response.status).toBe(201)
         expect(id_registro).toBeDefined()
+        expect(response.body.bimestre).toBe("1º Bimestre")
 
     })
 
@@ -168,6 +185,59 @@ describe("POST /api/registros", () => {
             })
 
         expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro ao cadastrar SESI sem bimestre", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Fundamentos Teóricos",
+                titulo: "Registro de teste",
+                descricao: "Descrição do registro de teste"
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve retornar erro com bimestre inválido", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area,
+                secao: "Fundamentos Teóricos",
+                bimestre: "5º Bimestre",
+                titulo: "Registro de teste",
+                descricao: "Descrição do registro de teste"
+            })
+
+        expect(response.status).toBe(400)
+
+    })
+
+    test("Deve cadastrar registro do SENAI sem bimestre", async () => {
+
+        const response = await request(app)
+            .post("/api/registros")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area_senai,
+                secao: "Fundamentos Teóricos",
+                titulo: "Registro SENAI",
+                descricao: "Descrição da atividade do SENAI"
+            })
+
+        id_registro_senai = response.body.id_registro
+
+        expect(response.status).toBe(201)
+        expect(id_registro_senai).toBeDefined()
+        expect(response.body.bimestre).toBeNull()
 
     })
 
@@ -289,6 +359,23 @@ describe("PUT /api/registros/:id", () => {
 
     })
 
+    test("Deve atualizar registro do SENAI sem bimestre", async () => {
+
+        const response = await request(app)
+            .put(`/api/registros/${id_registro_senai}`)
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                id_area: id_area_senai,
+                secao: "Fundamentos Teóricos",
+                titulo: "Registro SENAI atualizado",
+                descricao: "Descrição atualizada"
+            })
+
+        expect(response.status).toBe(200)
+        expect(response.body.bimestre).toBeNull()
+
+    })
+
 })
 
 describe("PATCH /api/registros/:id", () => {
@@ -307,6 +394,7 @@ describe("PATCH /api/registros/:id", () => {
         expect(response.status).toBe(200)
         expect(response.body.titulo).toBe("Título atualizado parcialmente")
         expect(response.body.descricao).toBe("Descrição atualizada")
+        expect(response.body.bimestre).toBe("2º Bimestre")
 
     })
 
@@ -421,7 +509,7 @@ describe("DELETE /api/registros/:id", () => {
 
 afterAll(async () => {
 
-    if (id_registro && token) {
+    if(id_registro && token){
 
         const response = await request(app)
             .delete(`/api/registros/${id_registro}`)
@@ -431,10 +519,30 @@ afterAll(async () => {
 
     }
 
-    if (id_area && token) {
+    if(id_registro_senai && token){
+
+        const response = await request(app)
+            .delete(`/api/registros/${id_registro_senai}`)
+            .set("Authorization", `Bearer ${token}`)
+
+        expect([200, 404]).toContain(response.status)
+
+    }
+
+    if(id_area && token){
 
         const response = await request(app)
             .delete(`/api/areas/${id_area}`)
+            .set("Authorization", `Bearer ${token}`)
+
+        expect([200, 404]).toContain(response.status)
+
+    }
+
+    if(id_area_senai && token){
+
+        const response = await request(app)
+            .delete(`/api/areas/${id_area_senai}`)
             .set("Authorization", `Bearer ${token}`)
 
         expect([200, 404]).toContain(response.status)

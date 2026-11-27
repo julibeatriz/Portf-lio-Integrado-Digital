@@ -10,6 +10,7 @@ function Secao() {
     const [bimestre, setBimestre] = useState("Todos")
     const [erro, setErro] = useState("")
     const [carregando, setCarregando] = useState(true)
+    const [instituicao, setInstituicao] = useState("")
 
     const bimestres = [
         "Todos",
@@ -25,6 +26,19 @@ function Secao() {
             try {
                 setCarregando(true)
                 setErro("")
+                setBimestre("Todos")
+                setRegistros([])
+                setInstituicao("")
+
+                const respostaArea = await fetch(`${API_URL}/areas/${id}`)
+
+                if (!respostaArea.ok) {
+                    throw new Error("Erro ao buscar área")
+                }
+
+                const dadosArea = await respostaArea.json()
+
+                setInstituicao(dadosArea.instituicao)
 
                 const response = await fetch(`${API_URL}/registros`)
 
@@ -54,11 +68,7 @@ function Secao() {
 
     }, [id, secao])
 
-    const registrosFiltrados = registros.filter(
-        registro =>
-            bimestre === "Todos" ||
-            registro.bimestre === bimestre
-    )
+    const registrosFiltrados = registros.filter( registro => instituicao === "Senai" || bimestre === "Todos" || registro.bimestre === bimestre)
 
     return (
         <div className="secao">
@@ -82,21 +92,25 @@ function Secao() {
 
             <section className="registros-academicos">
 
-                <h2>Selecione o bimestre</h2>
+                {instituicao === "Sesi" && (
+                    <>
+                        <h2>Selecione o bimestre</h2>
 
-                <div className="filtro-bimestres">
+                        <div className="filtro-bimestres">
 
-                    {bimestres.map(item => (
-                        <button
-                            key={item}
-                            onClick={() => setBimestre(item)}
-                            className={bimestre === item ? "ativo" : ""}
-                        >
-                            {item}
-                        </button>
-                    ))}
+                            {bimestres.map(item => (
+                                <button
+                                    key={item}
+                                    onClick={() => setBimestre(item)}
+                                    className={bimestre === item ? "ativo" : ""}
+                                >
+                                    {item}
+                                </button>
+                            ))}
 
-                </div>
+                        </div>
+                    </>
+                )}
 
                 <h2>Registros acadêmicos</h2>
 
@@ -104,13 +118,7 @@ function Secao() {
 
                 {carregando && <p>Carregando registros...</p>}
 
-                {!carregando && !erro &&
-                    registrosFiltrados.length === 0 && (
-                        <p className="sem-registros">
-                            Nenhum registro encontrado.
-                        </p>
-                    )
-                }
+                {!carregando && !erro && registrosFiltrados.length === 0 && (<p className="sem-registros"> Nenhum registro encontrado. </p>)}
 
                 <div className="lista-registros">
 
@@ -120,7 +128,7 @@ function Secao() {
                             key={registro.id_registro}
                         >
 
-                            <span>{registro.bimestre}</span>
+                           {instituicao === "Sesi" && registro.bimestre && ( <span>{registro.bimestre}</span>)}
 
                             <h3>{registro.titulo}</h3>
 
