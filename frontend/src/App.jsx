@@ -16,6 +16,7 @@ import CadastroArea from './pages/admin/CadastroArea.jsx'
 import CadastroRegistro from './pages/admin/CadastroRegistro.jsx'
 import GerenciarRegistros from './pages/admin/GerenciarRegistro.jsx'
 import EditarRegistro from './pages/admin/EditarRegistro.jsx'
+import Erro404 from './pages/Erro404.jsx'
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/admin/registros/cadastrar" element={<RotaProtegida> <CadastroRegistro/></RotaProtegida>}/>
         <Route path="/admin/registros" element={<RotaProtegida> <GerenciarRegistros/></RotaProtegida>}/>
         <Route path="/admin/registros/editar/:id" element={<RotaProtegida> <EditarRegistro/></RotaProtegida>}/>
+        <Route path="*" element={<Erro404/>} />
       </Routes> 
     </main>  
     
