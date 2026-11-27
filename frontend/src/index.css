@@ -281,11 +281,7 @@ h1 {
     text-align: justify;
 }
 
-/* PÁGINA SESI */
-
-
-/* PÁGINA SENAI */
-/* PORTFÓLIOS SESI E SENAI */
+/* SESI E SENAI */
 
 .portfolio-apresentacao {
     text-align: center;
@@ -363,7 +359,7 @@ h1 {
 }
 
 
-/* PÁGINA DE ÁREAS */
+/* ÁREAS */
 
 .area .portfolio-apresentacao {
     position: relative;
@@ -388,6 +384,75 @@ h1 {
 
 .area .card-area h3 {
     font-size: 24px;
+}
+
+/* SEÇÕES E BIMESTRES */
+
+.registros-academicos {
+    background-color: var(--verde-claro);
+    padding: 50px 10%;
+}
+
+.registros-academicos h2 {
+    color: var(--titulo);
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.filtro-bimestres {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.filtro-bimestres button {
+    background-color: var(--branco);
+    color: var(--titulo);
+    border: 1px solid var(--verde-medio);
+}
+
+.filtro-bimestres button:hover,
+.filtro-bimestres button.ativo {
+    background-color: var(--verde-medio);
+    color: var(--branco);
+}
+
+.lista-registros {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-registro {
+    background-color: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.card-registro span {
+    color: var(--verde-medio);
+    font-size: 14px;
+}
+
+.card-registro h3 {
+    color: var(--titulo);
+    font-size: 26px;
+    margin: 15px 0;
+}
+
+.card-registro p {
+    color: var(--texto);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.sem-registros {
+    text-align: center;
+    color: var(--verde-medio);
+    padding: 30px;
 }
 
 /* REGISTROS */

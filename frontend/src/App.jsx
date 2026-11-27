@@ -7,6 +7,7 @@ import SobreMin from './pages/SobreMim.jsx'
 import Sesi from './pages/Sesi.jsx'
 import Senai from './pages/Senai.jsx'
 import Area from './pages/area.jsx'
+import Secao from './pages/Secao.jsx'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/sesi" element={<Sesi/>}/>
         <Route path="/senai" element={<Senai/>}/>
         <Route path="/area/:id" element={<Area/>}/>
+        <Route path="/area/:id/secao/:secao" element={<Secao/>}/>
       </Routes> 
     </main>  
     
