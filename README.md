@@ -107,13 +107,17 @@ As principais entidades são:
 ## Segurança
 
 O sistema utiliza JWT para autenticação,
-Bcrypt para criptografia de senhas por hash
+Bcrypt para proteção de senhas por meio de hash
 e controle de permissões para proteger as
 funcionalidades administrativas.
 
 A consulta dos registros é pública, enquanto
 as operações de cadastro, edição e exclusão
 são restritas ao administrador autenticado.
+
+As credenciais e a chave de autenticação são
+armazenadas em variáveis de ambiente, evitando
+a exposição dessas informações no código-fonte.
 
 ## Evidências
 
@@ -143,39 +147,112 @@ Limites:
 - NPM;
 - Git.
 
+### Clonando o repositório
+
+Clone o repositório e acesse a pasta do projeto:
+
+```bash
+git clone https://github.com/julibeatriz/Portf-lio-Integrado-Digital.git
+cd Portf-lio-Integrado-Digital
+```
+
 ### Backend
 
 Acesse a pasta backend e instale as dependências:
 
-    cd backend
-    npm install
+```bash
+cd backend
+npm install
+```
 
-Configure o arquivo .env com as variáveis de
-ambiente necessárias:
+Crie um arquivo .env na pasta backend e configure
+as seguintes variáveis de ambiente:
 
-    ADMIN_EMAIL=seu_email
-    ADMIN_SENHA=sua_senha
-    JWT_SECRET=sua_chave_secreta
+```env
+ADMIN_EMAIL=seu_email
+ADMIN_SENHA=sua_senha
+JWT_SECRET=sua_chave_secreta
+```
 
-Execute o servidor utilizando o script definido
-no package.json.
+Substitua os valores de exemplo por suas próprias
+credenciais e utilize uma chave secreta forte.
 
-A API utiliza o endereço:
+Crie o usuário administrador:
 
-    http://localhost:3333/api
+```bash
+node src/Admin.js
+```
+
+Inicie o servidor:
+
+```bash
+npm run dev
+```
+
+O banco de dados SQLite será inicializado
+automaticamente pelo Sequelize, conforme a
+configuração da aplicação.
+
+A API estará disponível no endereço:
+
+```text
+http://localhost:3333/api
+```
 
 ### Frontend
 
-Em outro terminal, acesse a pasta frontend:
+Abra outro terminal na pasta raiz do projeto,
+acesse a pasta frontend e instale as dependências:
 
-    cd frontend
-    npm install
-    npm run dev
+```bash
+cd frontend
+npm install
+```
+
+Inicie a aplicação:
+
+```bash
+npm run dev
+```
 
 Acesse o endereço disponibilizado pelo Vite,
 normalmente:
 
-    http://localhost:5173
+```text
+http://localhost:5173
+```
+
+Mantenha o backend e o frontend em execução
+simultaneamente para utilizar o sistema.
+
+### Acesso administrativo
+
+Acesse a página de login e utilize o e-mail
+e a senha definidos no arquivo .env durante
+a criação do administrador.
+
+Após a autenticação, será possível cadastrar,
+editar e excluir áreas de conhecimento e
+registros acadêmicos.
+
+Para começar a preencher o portfólio, cadastre
+primeiramente as áreas de conhecimento e,
+em seguida, os registros acadêmicos.
+
+### Observações sobre a instalação
+
+As pastas node_modules não estão incluídas
+no repositório, pois as dependências são
+instaladas pelo comando npm install.
+
+O arquivo .env, o banco de dados local e
+os arquivos de evidências não estão incluídos
+no repositório.
+
+Uma nova instalação será iniciada sem os
+registros acadêmicos cadastrados anteriormente,
+permitindo a criação de novos conteúdos pelo
+administrador.
 
 ## Testes
 
@@ -194,6 +271,18 @@ do sistema.
 - Upload de arquivos;
 - Cadastro de links de evidências.
 
+Para executar os testes do backend, acesse
+a pasta correspondente:
+
+```bash
+cd backend
+npm test
+```
+
+Recomenda-se realizar um backup do banco de dados
+antes da execução dos testes, caso existam
+registros cadastrados.
+
 ### Testes do frontend
 
 - Renderização de componentes;
@@ -203,10 +292,13 @@ do sistema.
 - Gerenciamento de áreas;
 - Gerenciamento de registros.
 
-Para executar os testes, utilize o comando
-abaixo na pasta correspondente:
+Para executar os testes do frontend, acesse
+a pasta correspondente:
 
-    npm test
+```bash
+cd frontend
+npm test
+```
 
 ## Status do projeto
 
