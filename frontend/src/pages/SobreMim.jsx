@@ -1,4 +1,4 @@
-import foto from "../assets/WIN_20260430_14_51_13_Pro.jpg"
+import foto from "../assets/perfil.jpeg"
 import { Link } from "react-router-dom"
 
 function SobreMin() {
@@ -12,18 +12,24 @@ function SobreMin() {
             <img src={foto} alt="Foto de perfil" />
 
         <div className="perfil-texto">
-            <h2>Júlia Beatriz</h2>
+            <h2>Júlia Beatriz Barbosa de Oliveira</h2>
 
-            <h3>
-                 Estudante | Desenvolvedora Web em formação
-            </h3>
+            <h3>Estudante | Desenvolvedora Web em formação</h3>
 
             <p>
-                Sou estudante do SESI e do curso de
-                Desenvolvedor Web no SENAI.
+                Olá! Sou estudante do 3º G do Ensino Médio do SESI
+                e do itinerário de Técnico em Informática para
+                Internet no SENAI.
             </p>
 
-            </div>
+            <p>
+                Minhas principais expectativas após concluir o
+                Ensino Médio são ingressar em uma faculdade ou
+                conquistar uma aprovação em um concurso público,
+                buscando estabilidade profissional e financeira
+                para realizar meus sonhos e alcançar meus objetivos.
+            </p>
+        </div>
                 </div>
             
             

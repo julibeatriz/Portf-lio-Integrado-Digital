@@ -22,6 +22,19 @@ body {
     min-height: 100vh;
 }
 
+#root {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+}
+
 a {
     text-decoration: none;
     color: inherit;
@@ -108,6 +121,7 @@ h1 {
 }
 
 /* NAVBAR */
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -145,6 +159,7 @@ h1 {
 }
 
 /* FOOTER */
+
 .footer {
     background-color: var(--verde-escuro);
     color: var(--branco);
@@ -169,10 +184,50 @@ h1 {
 
 /* PÁGINA INICIAL */
 
+.home {
+    width: 100%;
+    min-width: 0;
+}
+
+.apresentacao-home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    padding: 60px 10%;
+    background-color: var(--fundo);
+}
+
+.apresentacao-home img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid var(--verde-suave);
+    flex-shrink: 0;
+}
+
+.texto-home {
+    max-width: 600px;
+    min-width: 0;
+}
+
+.texto-home h1 {
+    color: var(--titulo);
+    font-size: 38px;
+    margin-bottom: 20px;
+}
+
+.texto-home p {
+    font-size: 18px;
+    line-height: 1.8;
+}
+
 .formacao {
     background-color: var(--verde-claro);
     padding: 60px 5%;
     text-align: center;
+    width: 100%;
 }
 
 .formacao h2 {
@@ -181,12 +236,20 @@ h1 {
     margin-bottom: 15px;
 }
 
+.formacao > p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
 .cards-formacao {
     display: flex;
     justify-content: center;
+    align-items: stretch;
     flex-wrap: wrap;
     gap: 30px;
-    margin-top: 35px;
+    width: 100%;
+    max-width: 900px;
+    margin: 35px auto 0;
 }
 
 .card-formacao {
@@ -195,6 +258,10 @@ h1 {
     padding: 35px;
     width: 350px;
     max-width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .card-formacao h3 {
@@ -206,9 +273,15 @@ h1 {
 .card-formacao p {
     font-size: 18px;
     line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.card-formacao .botao-home {
+    margin-top: auto;
 }
 
 /* QUEM SOU EU */
+
 .sobre-apresentacao {
     padding: 60px 10%;
     background-color: var(--fundo);
@@ -385,7 +458,7 @@ h1 {
     align-self: center;
 }
 
-/*ÁREAS */
+/* ÁREAS */
 
 .area .portfolio-apresentacao {
     position: relative;
@@ -470,7 +543,7 @@ h1 {
     padding: 30px;
 }
 
-/*REGISTROS */
+/* REGISTROS */
 
 .registro-detalhes {
     background-color: var(--branco);
@@ -525,7 +598,7 @@ h1 {
     margin: 0;
 }
 
-/*LOGIN */
+/* LOGIN */
 
 .login {
     background-color: var(--verde-claro);
@@ -605,7 +678,7 @@ h1 {
     margin-bottom: 15px;
 }
 
-/*PAINEL ADMINITRATIVO */
+/* PAINEL ADMINISTRATIVO */
 
 .painel .portfolio-apresentacao {
     position: relative;
@@ -621,8 +694,7 @@ h1 {
     min-height: 230px;
 }
 
-
-/* CADASTRO DE ÁREA*/
+/* CADASTRO DE ÁREA */
 
 .cadastro-admin {
     background-color: var(--verde-claro);
@@ -671,7 +743,7 @@ h1 {
     font-size: 17px;
 }
 
-/*CADATRO DE REGISTROS */
+/* CADASTRO DE REGISTROS */
 
 .form-admin input[type="file"] {
     background-color: var(--verde-claro);
@@ -782,77 +854,7 @@ h1 {
     text-decoration: underline;
 }
 
-/*RESPONSIVIDADE */
-
-@media (max-width: 768px) {
-
-    .navbar,
-    .perfil,
-    .cards-formacao,
-    .cards-trajetoria,
-    .cards-areas,
-    .barra-gerenciamento {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .menu {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-    }
-
-    .card-formacao,
-    .card-trajetoria,
-    .card-area,
-    .painel .card-area,
-    .form-admin,
-    .form-login,
-    .barra-gerenciamento input {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-    }
-
-    .apresentacao,
-    .portfolio-apresentacao,
-    .formacao,
-    .sobre,
-    .trajetoria,
-    .areas-conhecimento,
-    .registros-academicos,
-    .registro-conteudo,
-    .painel-opcoes {
-        padding: 30px 5%;
-    }
-
-    .apresentacao h1,
-    .portfolio-apresentacao h1,
-    .sobre-apresentacao h1 {
-        font-size: 28px;
-    }
-
-    .form-admin,
-    .form-login,
-    .registro-detalhes {
-        padding: 20px;
-    }
-
-    .acoes-registro,
-    .filtro-bimestres {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .perfil img,
-    .evidencia img {
-        max-width: 100%;
-        height: auto;
-    }
-  }
-
-  /* LINKS DAS EVIDÊNCIAS */
+/* LINKS DAS EVIDÊNCIAS */
 
 .links-evidencias {
     display: flex;
@@ -964,9 +966,95 @@ h1 {
     margin-top: 15px;
 }
 
-/* RESPONSIVIDADE DAS EVIDÊNCIAS */
+/* RESPONSIVIDADE */
 
 @media (max-width: 768px) {
+
+    .navbar,
+    .perfil,
+    .cards-formacao,
+    .cards-trajetoria,
+    .cards-areas,
+    .barra-gerenciamento {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .card-formacao,
+    .card-trajetoria,
+    .card-area,
+    .painel .card-area,
+    .form-admin,
+    .form-login,
+    .barra-gerenciamento input {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .apresentacao,
+    .portfolio-apresentacao,
+    .formacao,
+    .sobre,
+    .trajetoria,
+    .areas-conhecimento,
+    .registros-academicos,
+    .registro-conteudo,
+    .painel-opcoes {
+        padding: 30px 5%;
+    }
+
+    .apresentacao h1,
+    .portfolio-apresentacao h1,
+    .sobre-apresentacao h1 {
+        font-size: 28px;
+    }
+
+    .form-admin,
+    .form-login,
+    .registro-detalhes {
+        padding: 20px;
+    }
+
+    .acoes-registro,
+    .filtro-bimestres {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .perfil img,
+    .evidencia img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* PÁGINA INICIAL */
+
+    .apresentacao-home {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 5%;
+        gap: 25px;
+    }
+
+    .apresentacao-home img {
+        width: 200px;
+        height: 200px;
+        max-width: 100%;
+    }
+
+    .texto-home h1 {
+        font-size: 28px;
+    }
+
+    /* EVIDÊNCIAS */
 
     .campo-link {
         flex-direction: column;
@@ -989,5 +1077,4 @@ h1 {
     .link-evidencia {
         padding: 15px;
     }
-
 }
